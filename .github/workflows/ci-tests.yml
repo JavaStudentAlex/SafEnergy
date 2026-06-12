@@ -1,0 +1,97 @@
+name: ci-tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Run targeted tests
+        run: |
+          set -euo pipefail
+
+          if [ ! -d tests ]; then
+            echo "No tests directory exists yet."
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          HEAD_SHA="${{ github.sha }}"
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="$(git rev-parse "${HEAD_SHA}^" 2>/dev/null || printf '%s' "$HEAD_SHA")"
+          fi
+
+          declare -A SEEN=()
+          TEST_PATHS=()
+
+          add_path() {
+            local test_path="$1"
+            if [ ! -e "$test_path" ]; then
+              return
+            fi
+            if [ -n "${SEEN[$test_path]:-}" ]; then
+              return
+            fi
+            SEEN["$test_path"]=1
+            TEST_PATHS+=("$test_path")
+          }
+
+          add_all_tests() {
+            add_path tests
+          }
+
+          while IFS= read -r path; do
+            case "$path" in
+              "")
+                continue
+                ;;
+              tests/test_*.py|tests/**/test_*.py)
+                add_path "$path"
+                ;;
+              tests/*)
+                add_all_tests
+                ;;
+              *.py|pyproject.toml|uv.lock|.github/workflows/ci-tests.yml)
+                add_all_tests
+                ;;
+              .github/instructions/*|.github/agents/*|.github/skills/*)
+                add_all_tests
+                ;;
+            esac
+          done < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+
+          if [ "${#TEST_PATHS[@]}" -eq 0 ]; then
+            echo "No relevant tests selected."
+            exit 0
+          fi
+
+          printf 'Selected test paths:\n'
+          printf '  %s\n' "${TEST_PATHS[@]}"
+          uv run pytest "${TEST_PATHS[@]}" -q
