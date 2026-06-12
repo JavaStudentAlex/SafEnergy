@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -156,6 +158,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Local provider credentials
+service-account*.json
+google-application-credentials*.json
 
 # Spyder project settings
 .spyderproject
@@ -216,3 +222,43 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── GSD baseline (auto-generated) ──
+.gsd/**
+!.gsd/
+!.gsd/**/
+!.gsd/*.md
+!.gsd/**/*.md
+.gsd-id
+.mcp.json
+.bg-shell/
+.DS_Store
+Thumbs.db
+nul
+nul.*
+con
+con.*
+prn
+prn.*
+aux
+aux.*
+com[1-9]
+com[1-9].*
+lpt[1-9]
+lpt[1-9].*
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+.env.*
+!.env.example
+node_modules/
+.next/
+*.pyc
+.venv/
+vendor/
+coverage/
+.cache/
+tmp/
