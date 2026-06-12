@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-06-12T22:53:19Z | Files: 24 | Described: 0/24
-<!-- gsd:codebase-meta {"generatedAt":"2026-06-12T22:53:19Z","fingerprint":"5482f60aa7ef66c9efea6b119d6f70e437c921b4","fileCount":24,"truncated":false} -->
+Generated: 2026-06-12T23:01:09Z | Files: 25 | Described: 0/25
+<!-- gsd:codebase-meta {"generatedAt":"2026-06-12T23:01:09Z","fingerprint":"39b1d8d931b7aae6080ccdad94d5641c00e45a6e","fileCount":25,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -9,6 +9,7 @@ Generated: 2026-06-12T22:53:19Z | Files: 24 | Described: 0/24
 - `CLAUDE.md`
 - `GEMINI.md`
 - `pyproject.toml`
+- `skills-lock.json`
 
 ### .github/
 - `.github/PULL_REQUEST_TEMPLATE.md`
