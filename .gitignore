@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -156,6 +158,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Local provider credentials
+service-account*.json
+google-application-credentials*.json
 
 # Spyder project settings
 .spyderproject
