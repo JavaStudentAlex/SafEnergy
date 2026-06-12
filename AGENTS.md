@@ -144,6 +144,21 @@ Subsystem boundaries:
   optional native dependencies, or external service limits, report the block
   explicitly and run the closest deterministic checks available.
 
+## GSD and Jules Task Selection
+
+- Treat `.gsd/QUEUE.md`, `.gsd/STATE.md`, and
+  `.gsd/milestones/<milestone>/<milestone>-ROADMAP.md` as the task-running
+  source of truth.
+- When a Jules or agent task runner starts without an explicit task override,
+  select exactly one work item: the active slice in `.gsd/STATE.md`; if that is
+  missing or already complete, use the first unchecked `[ ]` slice in the active
+  milestone roadmap.
+- Do not run the whole milestone, all requirements, or
+  `.gsd/normalized_task_outline.txt` as a single task. The normalized outline is
+  an ignored import artifact, not the execution queue.
+- After completing a slice, update the relevant GSD state or roadmap checkbox
+  before selecting the next unfinished slice.
+
 ## Instruction Map
 
 - Behavioral overlay:
