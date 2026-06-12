@@ -1,0 +1,57 @@
+[project]
+name = "safenergy"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.14.1",
+    "alembic>=1.18.4",
+    "apscheduler>=3.11.2",
+    "duckdb>=1.5.3",
+    "fastapi>=0.136.3",
+    "geopandas>=1.1.3",
+    "httpx>=0.28.1",
+    "joblib>=1.5.3",
+    "lightgbm>=4.6.0",
+    "numpy>=2.4.6",
+    "odc-stac>=0.5.2",
+    "openmeteo-requests>=1.7.5",
+    "pandas>=3.0.3",
+    "polars>=1.41.2",
+    "pvlib>=0.15.1",
+    "pyarrow>=24.0.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+    "pyproj>=3.7.2",
+    "pystac-client>=0.9.0",
+    "python-dotenv>=1.2.2",
+    "rasterio>=1.5.0",
+    "redis>=8.0.0",
+    "requests-cache>=1.3.2",
+    "retry-requests>=2.0.0",
+    "rioxarray>=0.22.0",
+    "scikit-learn>=1.9.0",
+    "scipy>=1.17.1",
+    "sentinelhub>=3.11.5",
+    "shapely>=2.1.2",
+    "sqlalchemy>=2.0.50",
+    "sqlmodel>=0.0.38",
+    "stackstac>=0.5.0",
+    "tenacity>=9.1.4",
+    "uvicorn[standard]>=0.49.0",
+    "xarray>=2026.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.11",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable isort (I) and flake8 (E, F) checks while ignoring line length (E501)
+select = ["E", "F", "I"]
+ignore = ["E501"]
