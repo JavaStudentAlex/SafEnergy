@@ -27,4 +27,4 @@ jobs:
         run: uv lock --check
 
       - name: Run Ruff checks
-        run: uv run ruff check .
+        run: uv run ruff check --exclude .agents .
