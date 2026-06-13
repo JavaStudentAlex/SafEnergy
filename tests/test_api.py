@@ -221,3 +221,50 @@ def test_weather_forecast(mock_fetch_weather):
 def test_weather_forecast_not_found():
     response = client.get("/weather/forecast?plant_id=non-existent-plant")
     assert response.status_code == 404
+
+def test_get_forecast_by_plant_id():
+    """
+    Test the new /forecast/{plant_id} endpoint.
+    """
+    plant_id = "test-plant-001" # from fixtures if we have one, or mock the plant
+
+    # We can mock get_plant_by_id and fetch_weather_forecast to make it deterministic
+    with patch("safenergy.api.routes.get_plant_by_id") as mock_get_plant:
+        mock_get_plant.return_value = {
+            "plant_id": plant_id,
+            "name": "Test Plant",
+            "latitude": 52.52,
+            "longitude": 13.40,
+            "timezone": "Europe/Berlin",
+            "capacity_mw": 10.0,
+            "status": "active",
+            "battery_capacity_mwh": 0.0,
+            "metadata_dict": {}
+        }
+
+        with patch("safenergy.api.routes.fetch_weather_forecast") as mock_fetch_weather:
+            # Create dummy weather data
+            now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+            idx = pd.date_range(start=now - pd.Timedelta(hours=1), periods=4, freq="1h", tz="UTC")
+            df = pd.DataFrame({
+                "shortwave_radiation": [0.0, 500.0, 600.0, 0.0],
+                "temperature_2m": [15.0, 16.0, 17.0, 15.0],
+                "wind_speed_10m": [3.0, 4.0, 5.0, 3.0]
+            }, index=idx)
+            mock_fetch_weather.return_value = df
+
+            response = client.get(f"/forecast/{plant_id}?horizon_minutes=60")
+            assert response.status_code == 200
+            data = response.json()
+
+            assert data["asset_id"] == plant_id
+            assert "predictions" in data
+
+            # Since we return future points, it should return at least some points
+            # up to the horizon. (15m resampling means up to 4 points for 60m horizon)
+            predictions = data["predictions"]
+            assert len(predictions) > 0
+
+            # Check the method is populated (should use pvlib_physical or diagnostic_fallback)
+            for pred in predictions:
+                assert pred["method"] in ["pvlib_physical", "diagnostic_fallback"]
