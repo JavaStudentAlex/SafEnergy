@@ -1,14 +1,16 @@
 # GSD State
 
-**Active Milestone:** M001-7qeil2: Renewable Forecasting Trading Prototype
-**Active Slice:** None
-**Phase:** completed
-**Requirements Status:** 0 active · 0 validated · 0 deferred · 0 out of scope
+**Active Milestone:** M002-7jq3dt: Live Data Forecast Serving Integration
+**Active Slice:** S01: Satellite Discovery and Feature Seed
+**Phase:** execution
+**Requirements Status:** 1 active · 0 validated · 0 deferred · 0 out of scope
 
 ## Milestone Registry
 - ✅ **M001-7qeil2:** Renewable Forecasting Trading Prototype
+- 🟢 **M002-7jq3dt:** Live Data Forecast Serving Integration
 
 ## Recent Decisions
+- Completed S01 of M002-7jq3dt: Implemented satellite discovery via fixture fallback and minimal deterministic satellite feature extraction.
 - Verified all tasks in M001-7qeil2 are complete and tests are passing.
 - Completed S14: Testing and Final Demo Polish, including documentation and smoke tests.
 - Implemented Dashboard and Backtest Views using Streamlit for S13.
@@ -28,4 +30,4 @@
 - None
 
 ## Next Action
-None. Milestone M001-7qeil2 is verified complete.
+Proceed to S02: Live Market and Generation Adapter.
