@@ -39,7 +39,7 @@
 - [x] **S08: Signal Thresholds and Market Context** `[sketch]` `risk:medium` `depends:[S06,S07]`
   > After this: Forecast deltas are categorized into operationally meaningful signal levels with market context.
 
-- [ ] **S09: Trading Signal and Backtest Engine** `[sketch]` `risk:high` `depends:[S08]`
+- [x] **S09: Trading Signal and Backtest Engine** `[sketch]` `risk:high` `depends:[S08]`
   > After this: Trading signal objects, price sensitivity, risk filters, and backtest metrics can be generated from forecast deltas.
 
 - [ ] **S10: Storage Layer** `[sketch]` `risk:medium` `depends:[S03,S04]`
