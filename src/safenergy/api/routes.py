@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 
@@ -10,6 +12,7 @@ from safenergy.api.schemas import (
     ForecastResponse,
     SignalRequest,
 )
+from safenergy.forecast.service import forecast_serving
 from safenergy.signals.backtest import evaluate_signals
 from safenergy.signals.explanation import ExplanationResponse, generate_explanation
 from safenergy.signals.objects import TradingSignal
@@ -84,29 +87,45 @@ def compute_backtest(request: BacktestRequest):
 @router.post("/forecast/predict", response_model=ForecastResponse, tags=["Forecast"])
 def predict_forecast(request: ForecastRequest):
     """
-    Predict target values using a mocked response to fulfill the forecast API contract.
+    Predict target values using the forecast serving service.
     """
     if not request.features:
         raise HTTPException(status_code=400, detail="No features provided")
 
-    predictions = []
-    for row in request.features:
-        # Mock prediction logic
-        point_prediction = 10.0
-        prediction = ForecastPrediction(
-            timestamp=row.timestamp,
-            point=point_prediction
+    try:
+        # Reconstruct DataFrame from features
+        timestamps = [row.timestamp for row in request.features]
+        feature_dicts = [row.features for row in request.features]
+        df_features = pd.DataFrame(feature_dicts, index=pd.DatetimeIndex(timestamps))
+
+        issue_time = datetime.now(timezone.utc)
+
+        # Use forecast service
+        preds_df = forecast_serving(
+            features=df_features,
+            issue_time=issue_time,
+            model_path=None,  # Fallback to baseline in demo
+            return_uncertainty=request.return_uncertainty
         )
-        if request.return_uncertainty:
-            prediction.lower = point_prediction - 2.0
-            prediction.upper = point_prediction + 2.0
 
-        predictions.append(prediction)
+        predictions = []
+        for timestamp, row in preds_df.iterrows():
+            prediction = ForecastPrediction(
+                timestamp=timestamp,
+                point=row["point"]
+            )
+            if request.return_uncertainty and "lower" in row and "upper" in row:
+                prediction.lower = row["lower"]
+                prediction.upper = row["upper"]
 
-    return ForecastResponse(
-        asset_id=request.asset_id,
-        predictions=predictions
-    )
+            predictions.append(prediction)
+
+        return ForecastResponse(
+            asset_id=request.asset_id,
+            predictions=predictions
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/trading/explain", response_model=ExplanationResponse, tags=["Trading"])

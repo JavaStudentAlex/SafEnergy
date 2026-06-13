@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M002-7jq3dt: Live Data Forecast Serving Integration
-**Active Slice:** S04: Real Forecast Serving Path
+**Active Slice:** S05: End to End Orchestrator
 **Phase:** execution
 **Requirements Status:** 1 active · 0 validated · 0 deferred · 0 out of scope
 
@@ -10,6 +10,7 @@
 - 🟢 **M002-7jq3dt:** Live Data Forecast Serving Integration
 
 ## Recent Decisions
+- Completed S04 of M002-7jq3dt: Created forecast serving boundary supporting model inference and persistence fallback, connected it to API.
 - Completed S03 of M002-7jq3dt: Added provenance and geospatial metadata tracking in the duckdb storage client.
 - Completed S02 of M002-7jq3dt: Replaced deterministic market mocks with a provider-shaped adapter, added fixture fallback and network failure simulation.
 - Completed S01 of M002-7jq3dt: Implemented satellite discovery via fixture fallback and minimal deterministic satellite feature extraction.
@@ -32,4 +33,4 @@
 - None
 
 ## Next Action
-Proceed to S04: Real Forecast Serving Path.
+Proceed to S05: End to End Orchestrator.
