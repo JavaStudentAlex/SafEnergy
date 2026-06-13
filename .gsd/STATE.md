@@ -1,14 +1,15 @@
 # GSD State
 
 **Active Milestone:** M001-7qeil2: Renewable Forecasting Trading Prototype
-**Active Slice:** S14: Testing and Final Demo Polish
+**Active Slice:** None
 **Phase:** building
 **Requirements Status:** 0 active · 0 validated · 0 deferred · 0 out of scope
 
 ## Milestone Registry
-- 🔄 **M001-7qeil2:** Renewable Forecasting Trading Prototype
+- ✅ **M001-7qeil2:** Renewable Forecasting Trading Prototype
 
 ## Recent Decisions
+- Completed S14: Testing and Final Demo Polish, including documentation and smoke tests.
 - Implemented Dashboard and Backtest Views using Streamlit for S13.
 - Implemented Explanation Service including human-readable summaries, confidence, and attribution for S12.
 - Implemented FastAPI Backend including REST endpoints for signals, backtesting, and forecasts for S11.
@@ -26,4 +27,4 @@
 - None
 
 ## Next Action
-Implement slice S14 (Testing and Final Demo Polish).
+None. Milestone M001-7qeil2 is complete.
