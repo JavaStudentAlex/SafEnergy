@@ -2,13 +2,18 @@ import logging
 
 import pandas as pd
 
+from safenergy.ingest.market import GenerationDataResponse, MarketDataResponse
 
-def align_weather_and_generation(weather_df: pd.DataFrame, generation_df: pd.DataFrame) -> pd.DataFrame:
+
+def align_weather_and_generation(weather_df: pd.DataFrame, generation_df: pd.DataFrame | GenerationDataResponse) -> pd.DataFrame:
     """
     Aligns weather and generation data into a single feature DataFrame.
     Expects both dataframes to have a timezone-aware DatetimeIndex.
     Uses '1h' frequency.
     """
+    if isinstance(generation_df, GenerationDataResponse):
+        generation_df = generation_df.data
+
     if weather_df.empty or generation_df.empty:
         logging.warning("One of the dataframes is empty. Returning empty dataframe.")
         return pd.DataFrame()
@@ -33,4 +38,36 @@ def align_weather_and_generation(weather_df: pd.DataFrame, generation_df: pd.Dat
     # We use an inner join since we need both weather and generation for supervised learning.
     # We can also do an outer join and fillna.
     aligned_df = weather_resampled.join(generation_resampled, how="outer")
+    return aligned_df
+
+
+def align_generation_and_prices(generation_df: pd.DataFrame | GenerationDataResponse, prices_df: pd.DataFrame | MarketDataResponse) -> pd.DataFrame:
+    """
+    Aligns generation and prices data into a single DataFrame on UTC valid time.
+    Resamples prices (typically 15min) to hourly using mean aggregation, matching the generation data.
+    """
+    if isinstance(generation_df, GenerationDataResponse):
+        generation_df = generation_df.data
+    if isinstance(prices_df, MarketDataResponse):
+        prices_df = prices_df.data
+
+    if generation_df.empty or prices_df.empty:
+        logging.warning("One of the dataframes is empty. Returning empty dataframe.")
+        return pd.DataFrame()
+
+    if generation_df.index.tz is None:
+        generation_df.index = generation_df.index.tz_localize("UTC")
+    else:
+        generation_df.index = generation_df.index.tz_convert("UTC")
+
+    if prices_df.index.tz is None:
+        prices_df.index = prices_df.index.tz_localize("UTC")
+    else:
+        prices_df.index = prices_df.index.tz_convert("UTC")
+
+    # Resample prices from 15min to 1h
+    prices_resampled = prices_df.resample("1h").mean()
+    generation_resampled = generation_df.resample("1h").mean()
+
+    aligned_df = generation_resampled.join(prices_resampled, how="outer")
     return aligned_df

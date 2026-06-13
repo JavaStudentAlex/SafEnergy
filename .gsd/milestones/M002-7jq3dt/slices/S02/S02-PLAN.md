@@ -24,22 +24,22 @@ Feature, backtest, and signal code can consume normalized market and generation 
 
 ## Tasks
 
-- [ ] **T01: Define market provider contracts** `est:0.5d`
+- [x] **T01: Define market provider contracts** `est:0.5d`
   Add provider-shaped request and response objects for price, generation, valid time, issue time, market node or region, cache key, staleness, and unavailable-provider diagnostics. Keep existing deterministic behavior as a fixture mode.
   - Files: `src/safenergy/ingest/market.py`, `tests/ingest/test_market.py`
   - Verify: uv run pytest tests/ingest/test_market.py -q
 
-- [ ] **T02: Implement ERCOT style adapter seam** `est:1d`
+- [x] **T02: Implement ERCOT style adapter seam** `est:1d`
   Implement an ERCOT-style adapter interface that can call a configured live endpoint when enabled, otherwise loads fixture-backed records. Return typed unavailable-provider diagnostics for HTTP, credential, schema, and empty-result failures.
   - Files: `src/safenergy/ingest/market.py`, `tests/fixtures/market/`, `tests/ingest/test_market.py`
   - Verify: uv run pytest tests/ingest/test_market.py -q
 
-- [ ] **T03: Align generation and price records for features** `est:0.5d`
+- [x] **T03: Align generation and price records for features** `est:0.5d`
   Add deterministic alignment helpers that join provider-shaped generation and price records on UTC valid time and region without leaking future values into forecast issue time.
   - Files: `src/safenergy/features/alignment.py`, `tests/test_features.py`, `tests/ingest/test_market.py`
   - Verify: uv run pytest tests/test_features.py tests/ingest/test_market.py -q
 
-- [ ] **T04: Document market data modes and limits** `est:0.25d`
+- [x] **T04: Document market data modes and limits** `est:0.25d`
   Document live, fixture, and unavailable market data behavior, including no-live-trading scope and why provider data is for decision support and backtests only.
   - Files: `docs/CONFIGURATION.md`, `docs/forecast_contract.md`
   - Verify: uv run ruff check src/safenergy/ingest/market.py src/safenergy/features/alignment.py tests/ingest/test_market.py tests/test_features.py && uv run pytest tests/ingest/test_market.py tests/test_features.py -q

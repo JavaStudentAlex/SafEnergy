@@ -27,6 +27,13 @@ fixtures, and local development still work when live services are unavailable.
 | Optional market/generation data | EIA | `EIA_API_KEY` | Only needed if an EIA adapter is implemented. |
 | Optional public data | SMARD, Energy-Charts, Ember, GDELT | none by default | Prefer cached downloads or fixture-backed adapters for demos. |
 
+## Market Data Modes
+
+Market data (e.g., ERCOT generation and pricing) adapters operate in three primary modes:
+- **Live**: Retrieves data from external provider APIs (if configured and reachable).
+- **Fixture**: When an explicit fixture path is provided (and `simulate_failure` is False), a deterministic snapshot of data is returned. This ensures reproducibility without relying on external network requests. Used for unit tests, backtests, and stable demos.
+- **Unavailable**: When `simulate_failure` is True or external APIs fail to respond, a typed diagnostic indicating network/credential errors or empty results is returned. The service continues gracefully by indicating the source as "unavailable."
+
 ## Minimum MVP Setup
 
 For the first satellite-driven forecast-to-trade slice, configure one of these
