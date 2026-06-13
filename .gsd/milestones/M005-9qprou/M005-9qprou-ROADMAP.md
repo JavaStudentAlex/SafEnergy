@@ -17,7 +17,7 @@
 - [x] **S02: DE LU Market Price Service** `risk:medium` `depends:[]`
   > After this: After this, the frontend can show European market prices in EUR per MWh for commitment exposure decisions.
 
-- [ ] **S03: Forecast Market Contract Smoke** `risk:medium` `depends:[S01,S02]`
+- [x] **S03: Forecast Market Contract Smoke** `risk:medium` `depends:[S01,S02]`
   > After this: After this, one demo plant can flow through weather, forecast, and market endpoints with consistent ids and units.
 
 ## Boundary Map
