@@ -36,7 +36,7 @@
 - [x] **S07: Forecast Evaluation** `[sketch]` `risk:high` `depends:[S05,S06]`
   > After this: Evaluation reports show model performance versus persistence using temporal splits and forecasting metrics.
 
-- [ ] **S08: Signal Thresholds and Market Context** `[sketch]` `risk:medium` `depends:[S06,S07]`
+- [x] **S08: Signal Thresholds and Market Context** `[sketch]` `risk:medium` `depends:[S06,S07]`
   > After this: Forecast deltas are categorized into operationally meaningful signal levels with market context.
 
 - [ ] **S09: Trading Signal and Backtest Engine** `[sketch]` `risk:high` `depends:[S08]`
