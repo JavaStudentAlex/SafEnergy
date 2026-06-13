@@ -1,7 +1,7 @@
 # GSD State
 
-**Active Milestone:** M005-9qprou: Forecast and Market Credibility Layer
-**Active Slice:** S03: Forecast Market Contract Smoke
+**Active Milestone:** M006-cgt3hd: Commitment Action Loop
+**Active Slice:** S01: Recommendation Engine
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -10,11 +10,12 @@
 - 🔄 **M002-7jq3dt:** Live Data Forecast Serving Integration
 - ⬜ **M003-4jb56n:** No Training Forecast Method Stack
 - ✅ **M004-njfgw0:** Frontend Alignment Foundation
-- 🔄 **M005-9qprou:** Forecast and Market Credibility Layer
-- ⬜ **M006-cgt3hd:** Commitment Action Loop
+- ✅ **M005-9qprou:** Forecast and Market Credibility Layer
+- 🔄 **M006-cgt3hd:** Commitment Action Loop
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S03 of M005-9qprou: Implemented Forecast Market Contract Smoke integration tests.
 - Completed S02 of M005-9qprou: Implemented DE LU Market Price Service and exposed /market/prices endpoint.
 - Completed S01 of M005-9qprou: Implemented Physics Informed PV Forecast endpoint /forecast/{plant_id}.
 - Completed S03 of M004-njfgw0: Verified Foundation Contract including API tests and OpenAPI schemas.
