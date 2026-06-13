@@ -14,7 +14,7 @@
 - [x] **S01: Physics Informed PV Forecast** `risk:high` `depends:[]`
   > After this: After this, the frontend can request short-horizon PV forecasts that respond to plant capacity and weather instead of fixed mocks.
 
-- [ ] **S02: DE LU Market Price Service** `risk:medium` `depends:[]`
+- [x] **S02: DE LU Market Price Service** `risk:medium` `depends:[]`
   > After this: After this, the frontend can show European market prices in EUR per MWh for commitment exposure decisions.
 
 - [ ] **S03: Forecast Market Contract Smoke** `risk:medium` `depends:[S01,S02]`

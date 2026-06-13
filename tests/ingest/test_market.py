@@ -128,3 +128,46 @@ def test_fetch_ercot_prices_failure():
 
     assert resp.diagnostic.status == "network_error"
     assert resp.data.empty
+
+def test_fetch_delu_prices():
+    start_date = datetime.date(2023, 1, 1)
+    end_date = datetime.date(2023, 1, 1)
+
+    from safenergy.ingest.market import fetch_delu_prices
+    resp = fetch_delu_prices(start_date, end_date)
+    df = resp.data
+
+    assert isinstance(df, pd.DataFrame)
+    # 1 day of 15 min intervals (96 intervals)
+    assert len(df) == 96
+    assert str(df.index.tz) == "UTC"
+    assert "day_ahead_eur_mwh" in df.columns
+    assert "intraday_eur_mwh" in df.columns
+    assert "balancing_short_eur_mwh" in df.columns
+    assert "balancing_long_eur_mwh" in df.columns
+
+    # Check peak prices
+    off_peak_da = df.loc["2023-01-01 00:00:00+00:00", "day_ahead_eur_mwh"]
+    peak_da = df.loc["2023-01-01 18:00:00+00:00", "day_ahead_eur_mwh"]
+    assert peak_da > off_peak_da
+
+def test_fetch_delu_prices_fixture():
+    start_date = datetime.date(2023, 1, 1)
+    end_date = datetime.date(2023, 1, 1)
+    fixture_path = Path("tests/fixtures/market/delu_prices.csv")
+    from safenergy.ingest.market import fetch_delu_prices
+    resp = fetch_delu_prices(start_date, end_date, fixture_path=fixture_path)
+
+    assert resp.diagnostic.status == "ok"
+    assert resp.diagnostic.cache_hit is True
+    assert len(resp.data) > 0
+    assert "day_ahead_eur_mwh" in resp.data.columns
+
+def test_fetch_delu_prices_failure():
+    start_date = datetime.date(2023, 1, 1)
+    end_date = datetime.date(2023, 1, 1)
+    from safenergy.ingest.market import fetch_delu_prices
+    resp = fetch_delu_prices(start_date, end_date, simulate_failure=True)
+
+    assert resp.diagnostic.status == "network_error"
+    assert resp.data.empty

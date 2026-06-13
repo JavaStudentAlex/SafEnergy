@@ -268,3 +268,45 @@ def test_get_forecast_by_plant_id():
             # Check the method is populated (should use pvlib_physical or diagnostic_fallback)
             for pred in predictions:
                 assert pred["method"] in ["pvlib_physical", "diagnostic_fallback"]
+
+@patch("safenergy.api.routes.fetch_delu_prices")
+def test_market_prices(mock_fetch_delu):
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+
+    timestamps = [current_hour, current_hour + timedelta(minutes=15), current_hour + timedelta(minutes=30)]
+    df = pd.DataFrame(
+        data={
+            "day_ahead_eur_mwh": [50.0, 50.0, 50.0],
+            "intraday_eur_mwh": [55.0, 55.0, 55.0],
+            "balancing_short_eur_mwh": [75.0, 75.0, 75.0],
+            "balancing_long_eur_mwh": [25.0, 25.0, 25.0]
+        },
+        index=pd.DatetimeIndex(timestamps, tz="UTC")
+    )
+    from safenergy.ingest.market import MarketDataDiagnostic, MarketDataResponse
+    diag = MarketDataDiagnostic(status="ok", records_returned=3)
+    resp = MarketDataResponse(
+        provider="DE-LU-Mock",
+        region="DE-LU",
+        issue_time=now,
+        valid_time_start=timestamps[0],
+        valid_time_end=timestamps[-1],
+        diagnostic=diag,
+        data=df
+    )
+    mock_fetch_delu.return_value = resp
+
+    response = client.get("/market/prices?zone=DE-LU&hours=1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["zone"] == "DE-LU"
+    assert "points" in data
+    # 3 points mocked here (for an hour there would be 4, but we gave it 3 valid points in df)
+    assert len(data["points"]) == 3
+    assert data["points"][0]["day_ahead_eur_mwh"] == 50.0
+
+def test_market_prices_invalid_zone():
+    response = client.get("/market/prices?zone=ERCOT")
+    assert response.status_code == 400
+    assert "Only DE-LU zone is supported" in response.json()["detail"]
