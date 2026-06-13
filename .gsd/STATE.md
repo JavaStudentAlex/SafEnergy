@@ -1,20 +1,21 @@
 # GSD State
 
-**Active Milestone:** M003-4jb56n: No Training Forecast Method Stack
-**Active Slice:**
-**Phase:** completed
+**Active Milestone:** M004-njfgw0: Frontend Alignment Foundation
+**Active Slice:** S02: Weather Overlay Endpoints
+**Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
 ## Milestone Registry
 - 🔄 **M001-7qeil2:** Renewable Forecasting Trading Prototype
 - 🔄 **M002-7jq3dt:** Live Data Forecast Serving Integration
 - ⬜ **M003-4jb56n:** No Training Forecast Method Stack
-- ⬜ **M004-njfgw0:** Frontend Alignment Foundation
+- 🔄 **M004-njfgw0:** Frontend Alignment Foundation
 - ⬜ **M005-9qprou:** Forecast and Market Credibility Layer
 - ⬜ **M006-cgt3hd:** Commitment Action Loop
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S01 of M004-njfgw0: Implemented Plant Registry Contract endpoints `/plants` and `/plants/{plant_id}`.
 - Completed S06 of M003-4jb56n: Documented rationale for deterministic baselines and added end-to-end integration tests to test_no_training_stack.py.
 - Completed S05 of M003-4jb56n: API and Signal Integration for no-training forecast stack.
 - Completed S04 of M003-4jb56n: Implemented deterministic method selector with confidence scoring, fallback diagnostics, and uncertainty metadata.
