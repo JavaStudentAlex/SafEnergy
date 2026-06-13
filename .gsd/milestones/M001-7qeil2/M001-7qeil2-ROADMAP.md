@@ -33,7 +33,7 @@
 - [x] **S06: Forecasting Model Service** `[sketch]` `risk:high` `depends:[S04,S05]`
   > After this: First ML models produce solar and wind generation-change forecasts with uncertainty and serialized artifacts if needed.
 
-- [ ] **S07: Forecast Evaluation** `[sketch]` `risk:high` `depends:[S05,S06]`
+- [x] **S07: Forecast Evaluation** `[sketch]` `risk:high` `depends:[S05,S06]`
   > After this: Evaluation reports show model performance versus persistence using temporal splits and forecasting metrics.
 
 - [ ] **S08: Signal Thresholds and Market Context** `[sketch]` `risk:medium` `depends:[S06,S07]`
