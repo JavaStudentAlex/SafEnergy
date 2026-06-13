@@ -25,7 +25,7 @@
 - [x] **S04: Real Forecast Serving Path** `risk:high` `depends:[S01,S02,S03]`
   > After this: The forecast predict endpoint uses normalized inputs, feature engineering, baselines, model inference, and storage instead of fixed point and interval constants.
 
-- [ ] **S05: End to End Orchestrator** `risk:high` `depends:[S04]`
+- [x] **S05: End to End Orchestrator** `risk:high` `depends:[S04]`
   > After this: A single orchestration function or service path runs data retrieval, feature building, model inference, baseline comparison, signal generation, explanation, storage, and API response assembly.
 
 - [ ] **S06: Dashboard Backend Integration** `risk:medium` `depends:[S05]`
