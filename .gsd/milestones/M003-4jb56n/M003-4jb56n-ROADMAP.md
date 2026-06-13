@@ -29,7 +29,7 @@
 - [x] **S05: API and Signal Integration** `risk:medium` `depends:[S04]`
   > After this: A forecast request without a trained model artifact returns a named no-training method, confidence and uncertainty metadata, and a trading signal that is conservative when confidence is low.
 
-- [ ] **S06: Tests and Clear Documentation** `risk:medium` `depends:[S05]`
+- [x] **S06: Tests and Clear Documentation** `risk:medium` `depends:[S05]`
   > After this: A new contributor can read the docs, run targeted tests, and understand why the system uses deterministic baselines instead of new trainable models.
 
 ## Boundary Map
