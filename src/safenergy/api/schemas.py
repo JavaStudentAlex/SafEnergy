@@ -132,3 +132,18 @@ class WeatherResponse(BaseModel):
     provenance: str
     interval_minutes: int
     points: List[WeatherPoint]
+
+
+class MarketPricePoint(BaseModel):
+    timestamp: datetime
+    day_ahead_eur_mwh: float
+    intraday_eur_mwh: float
+    balancing_short_eur_mwh: float
+    balancing_long_eur_mwh: float
+
+class MarketPriceResponse(BaseModel):
+    zone: str
+    valid_time: datetime
+    provenance: str
+    interval_minutes: int
+    points: List[MarketPricePoint]

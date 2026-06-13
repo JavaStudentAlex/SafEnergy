@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 from fastapi import APIRouter, HTTPException
@@ -10,6 +10,8 @@ from safenergy.api.schemas import (
     ForecastPrediction,
     ForecastRequest,
     ForecastResponse,
+    MarketPricePoint,
+    MarketPriceResponse,
     OrchestratorAPIResponse,
     OrchestratorRequest,
     PlantResponse,
@@ -18,6 +20,7 @@ from safenergy.api.schemas import (
     WeatherResponse,
 )
 from safenergy.forecast.service import forecast_serving
+from safenergy.ingest.market import fetch_delu_prices
 from safenergy.ingest.plants import get_all_plants, get_plant_by_id
 from safenergy.ingest.weather import fetch_weather_forecast
 from safenergy.orchestrator.pipeline import run_end_to_end_pipeline
@@ -454,5 +457,61 @@ def get_weather_forecast(plant_id: str, hours: int = 24):
         valid_time=now,
         provenance="open-meteo",
         interval_minutes=60,
+        points=points
+    )
+
+@router.get("/market/prices", response_model=MarketPriceResponse, tags=["Market"])
+def get_market_prices(zone: str = "DE-LU", hours: int = 24):
+    """
+    Returns future market prices for a given zone.
+    Currently only DE-LU is supported via fixture or simulated spreads.
+    """
+    if zone != "DE-LU":
+        raise HTTPException(status_code=400, detail="Only DE-LU zone is supported for market prices.")
+
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+    start_date = current_hour.date()
+    # Estimate how many days we need: hours / 24 + 1 to cross day boundaries safely
+    end_date = start_date + timedelta(days=max(1, (hours // 24) + 1))
+
+    try:
+        # In a real environment, we'd pull from a real database or service.
+        # For this prototype, we use the deterministic mock/fetch function directly.
+        resp = fetch_delu_prices(start_date=start_date, end_date=end_date)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching market prices: {str(e)}")
+
+    if resp.diagnostic.status != "ok" or resp.data.empty:
+        raise HTTPException(status_code=500, detail="Market prices data is empty or unavailable.")
+
+    df = resp.data
+    if df.index.tz is None:
+        df.index = df.index.tz_localize("UTC")
+
+    # Filter to include rows strictly >= current_hour
+    df_future = df[df.index >= current_hour]
+
+    # In '15min' frequency, each hour has 4 intervals
+    # 'hours' represents how many hours of data we want, so points = hours * 4
+    df_future = df_future.head(hours * 4)
+
+    points = []
+    for ts, row in df_future.iterrows():
+        points.append(
+            MarketPricePoint(
+                timestamp=ts.to_pydatetime(),
+                day_ahead_eur_mwh=float(row.get("day_ahead_eur_mwh", 0.0)),
+                intraday_eur_mwh=float(row.get("intraday_eur_mwh", 0.0)),
+                balancing_short_eur_mwh=float(row.get("balancing_short_eur_mwh", 0.0)),
+                balancing_long_eur_mwh=float(row.get("balancing_long_eur_mwh", 0.0)),
+            )
+        )
+
+    return MarketPriceResponse(
+        zone=zone,
+        valid_time=now,
+        provenance=resp.provider,
+        interval_minutes=15, # 15-minute intervals for DE-LU mock
         points=points
     )

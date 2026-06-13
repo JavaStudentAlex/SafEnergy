@@ -201,3 +201,88 @@ def fetch_ercot_prices(
         diagnostic=diag,
         data=df
     )
+
+
+def fetch_delu_prices(
+    start_date: datetime.date,
+    end_date: datetime.date,
+    fixture_path: Path | None = None,
+    simulate_failure: bool = False,
+) -> MarketDataResponse:
+    """
+    Fetches mock DE-LU pricing data (e.g., EUR/MWh day-ahead, intraday, balancing-short, balancing-long).
+    Returns a MarketDataResponse.
+    """
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
+    start_ts = pd.Timestamp(start_date, tz="UTC")
+    end_ts = pd.Timestamp(end_date, tz="UTC") + pd.Timedelta(days=1)
+
+    if simulate_failure:
+        diag = MarketDataDiagnostic(status="network_error", message="Simulated network failure.")
+        return MarketDataResponse(
+            provider="DE-LU-Mock",
+            region="DE-LU",
+            issue_time=now_utc,
+            valid_time_start=start_ts.to_pydatetime(),
+            valid_time_end=end_ts.to_pydatetime(),
+            diagnostic=diag,
+        )
+
+    if fixture_path and fixture_path.exists():
+        df = pd.read_csv(fixture_path, parse_dates=["timestamp"])
+        df.set_index("timestamp", inplace=True)
+        if df.index.tz is None:
+            df.index = df.index.tz_localize("UTC")
+        else:
+            df.index = df.index.tz_convert("UTC")
+        df = df[(df.index >= start_ts) & (df.index < end_ts)]
+        diag = MarketDataDiagnostic(status="ok", records_returned=len(df), cache_hit=True)
+        return MarketDataResponse(
+            provider="DE-LU-Fixture",
+            region="DE-LU",
+            issue_time=now_utc,
+            valid_time_start=start_ts.to_pydatetime(),
+            valid_time_end=end_ts.to_pydatetime(),
+            diagnostic=diag,
+            data=df
+        )
+
+    # Generate deterministic mock data
+    dr = pd.date_range(start=start_date, end=end_date + datetime.timedelta(days=1), freq="15min", tz="UTC", inclusive="left")
+    df = pd.DataFrame(index=dr)
+
+    # Simple realistic price shapes for DE-LU
+    hour = df.index.hour
+
+    # Day-ahead EUR/MWh: base 50, higher in morning and evening
+    df["day_ahead_eur_mwh"] = 50.0
+    mask_morning_peak = (hour >= 6) & (hour <= 9)
+    mask_evening_peak = (hour >= 17) & (hour <= 20)
+    df.loc[mask_morning_peak, "day_ahead_eur_mwh"] = 90.0
+    df.loc[mask_evening_peak, "day_ahead_eur_mwh"] = 110.0
+
+    # Intraday slightly more volatile
+    df["intraday_eur_mwh"] = df["day_ahead_eur_mwh"] + 5.0
+    df.loc[mask_evening_peak, "intraday_eur_mwh"] = 125.0
+
+    # Balancing short (you need power): very expensive during peaks
+    df["balancing_short_eur_mwh"] = df["day_ahead_eur_mwh"] * 1.5
+    df.loc[mask_evening_peak, "balancing_short_eur_mwh"] = 250.0
+
+    # Balancing long (you have extra power): cheap or negative
+    df["balancing_long_eur_mwh"] = df["day_ahead_eur_mwh"] * 0.5
+    # Maybe negative during mid-day solar peak
+    mask_solar_peak = (hour >= 11) & (hour <= 14)
+    df.loc[mask_solar_peak, "balancing_long_eur_mwh"] = -10.0
+
+    check_market_quality(df, '15min')
+    diag = MarketDataDiagnostic(status="ok", records_returned=len(df))
+    return MarketDataResponse(
+        provider="DE-LU-Mock",
+        region="DE-LU",
+        issue_time=now_utc,
+        valid_time_start=start_ts.to_pydatetime(),
+        valid_time_end=end_ts.to_pydatetime(),
+        diagnostic=diag,
+        data=df
+    )
