@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -17,6 +17,8 @@ class ForecastRequest(BaseModel):
     asset_id: str
     features: List[FeatureRow]
     return_uncertainty: bool = True
+    asset_type: str = "solar"
+    metadata_dict: Optional[Dict[str, Any]] = None
 
 
 class ForecastPrediction(BaseModel):
@@ -24,6 +26,11 @@ class ForecastPrediction(BaseModel):
     point: float
     lower: Optional[float] = None
     upper: Optional[float] = None
+    method: str = "unknown"
+    confidence_score: float = 0.0
+    fallback_reason: Optional[str] = None
+    inputs_used: List[str] = []
+    missing_inputs: List[str] = []
 
 
 class ForecastResponse(BaseModel):
@@ -36,6 +43,7 @@ class SignalInputRow(BaseModel):
     delta: float
     baseline: float
     price: float
+    confidence: float = 1.0
 
 
 class SignalRequest(BaseModel):

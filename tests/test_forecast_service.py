@@ -35,14 +35,29 @@ def test_forecast_serving_fallback_with_generation(sample_features):
     assert "upper" in preds_df.columns
 
     # Check persistence logic manually (shift by 1)
-    # First row is NaN
-    assert pd.isna(preds_df["point"].iloc[0])
-    # Second row is 10.0
-    assert preds_df["point"].iloc[1] == 10.0
+    # Ensure it uses diagnostic fallback or persistence depending on what select_forecast_method found
+    # In this mock, there's no normalizer so it probably uses diagnostic fallback
+    assert "method" in preds_df.columns
+    assert "confidence_score" in preds_df.columns
+    assert "fallback_reason" in preds_df.columns
+    assert "inputs_used" in preds_df.columns
+    assert "missing_inputs" in preds_df.columns
 
-    # Check uncertainty logic
-    assert preds_df["lower"].iloc[1] == 10.0 - 2.0
-    assert preds_df["upper"].iloc[1] == 10.0 + 2.0
+    # Since there's no normalizer, method should be diagnostic_fallback
+    assert preds_df["method"].iloc[1] == "diagnostic_fallback"
+
+def test_forecast_serving_selector_metadata():
+    idx = pd.date_range(start="2023-01-01 00:00", periods=2, freq="h", tz="UTC")
+    df = pd.DataFrame(index=idx)
+    issue_time = datetime(2023, 1, 1, 5, 0, tzinfo=timezone.utc)
+
+    preds_df = forecast_serving(df, issue_time, return_uncertainty=True)
+
+    assert "method" in preds_df.columns
+    assert preds_df["method"].iloc[0] == "diagnostic_fallback"
+    assert preds_df["confidence_score"].iloc[0] == 0.0
+    assert preds_df["fallback_reason"].iloc[0] is not None
+
 
 def test_forecast_serving_fallback_no_generation():
     # Without 'generation', it should fallback to deterministic 10.0
@@ -56,8 +71,8 @@ def test_forecast_serving_fallback_no_generation():
     assert "point" in preds_df.columns
     assert "lower" not in preds_df.columns
 
-    # Should all be 10.0
-    assert (preds_df["point"] == 10.0).all()
+    # Should all be NaN since diagnostic fallback returns NaN
+    assert preds_df["point"].isna().all()
 
 def test_forecast_serving_with_model(sample_features):
     # Train and save a simple model
@@ -87,6 +102,5 @@ def test_forecast_serving_model_load_failure(sample_features):
     issue_time = datetime(2023, 1, 1, 5, 0, tzinfo=timezone.utc)
     preds_df = forecast_serving(sample_features, issue_time, model_path="/invalid/path/to/model.joblib")
 
-    # Should be the persistence baseline
-    assert pd.isna(preds_df["point"].iloc[0])
-    assert preds_df["point"].iloc[1] == 10.0
+    # Should be the diagnostic fallback baseline (returns NaN because no normalizer present)
+    assert preds_df["point"].isna().all()

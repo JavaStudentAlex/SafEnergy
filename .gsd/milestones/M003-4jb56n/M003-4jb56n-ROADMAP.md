@@ -26,7 +26,7 @@
 - [x] **S04: Method Selector Confidence and Uncertainty** `risk:high` `depends:[S02,S03]`
   > After this: Changing fixture availability from rich inputs to missing inputs changes selected method, confidence, uncertainty, and fallback reason predictably.
 
-- [ ] **S05: API and Signal Integration** `risk:medium` `depends:[S04]`
+- [x] **S05: API and Signal Integration** `risk:medium` `depends:[S04]`
   > After this: A forecast request without a trained model artifact returns a named no-training method, confidence and uncertainty metadata, and a trading signal that is conservative when confidence is low.
 
 - [ ] **S06: Tests and Clear Documentation** `risk:medium` `depends:[S05]`

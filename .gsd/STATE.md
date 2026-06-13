@@ -15,6 +15,7 @@
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S05 of M003-4jb56n: API and Signal Integration for no-training forecast stack.
 - Completed S04 of M003-4jb56n: Implemented deterministic method selector with confidence scoring, fallback diagnostics, and uncertainty metadata.
 - Completed S03 of M003-4jb56n: Implemented Wind Power-Curve Approximation and Regional Capacity Fallback methods for no-training forecast stack.
 - Completed S02 of M003-4jb56n: Implemented Solar and Persistence Methods including smart persistence baseline and pvlib physical baseline.

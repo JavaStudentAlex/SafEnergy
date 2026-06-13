@@ -41,12 +41,14 @@ def compute_trading_signals(request: SignalRequest):
     deltas = [row.delta for row in request.data]
     baselines = [row.baseline for row in request.data]
     prices = [row.price for row in request.data]
+    confidences = [row.confidence for row in request.data]
 
     # create timezone-aware index
     index = pd.DatetimeIndex(timestamps)
     s_deltas = pd.Series(deltas, index=index)
     s_baselines = pd.Series(baselines, index=index)
     s_prices = pd.Series(prices, index=index)
+    s_confidences = pd.Series(confidences, index=index)
 
     try:
         signals = generate_trading_signals(
@@ -54,6 +56,7 @@ def compute_trading_signals(request: SignalRequest):
             deltas=s_deltas,
             baselines=s_baselines,
             prices=s_prices,
+            confidence_scores=s_confidences,
             strong_threshold=request.strong_threshold,
             weak_threshold=request.weak_threshold,
             curtailment_price_threshold=request.curtailment_price_threshold,
@@ -113,7 +116,9 @@ def predict_forecast(request: ForecastRequest):
             features=df_features,
             issue_time=issue_time,
             model_path=None,  # Fallback to baseline in demo
-            return_uncertainty=request.return_uncertainty
+            return_uncertainty=request.return_uncertainty,
+            asset_type=request.asset_type,
+            metadata_dict=request.metadata_dict
         )
 
         predictions = []
@@ -125,6 +130,17 @@ def predict_forecast(request: ForecastRequest):
             if request.return_uncertainty and "lower" in row and "upper" in row:
                 prediction.lower = row["lower"]
                 prediction.upper = row["upper"]
+
+            if "method" in row:
+                prediction.method = row["method"]
+            if "confidence_score" in row:
+                prediction.confidence_score = row["confidence_score"]
+            if "fallback_reason" in row:
+                prediction.fallback_reason = row["fallback_reason"]
+            if "inputs_used" in row:
+                prediction.inputs_used = row["inputs_used"]
+            if "missing_inputs" in row:
+                prediction.missing_inputs = row["missing_inputs"]
 
             predictions.append(prediction)
 

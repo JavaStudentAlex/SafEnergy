@@ -1,11 +1,11 @@
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 
-from safenergy.forecast.baselines import persistence_baseline
 from safenergy.forecast.models import LightGBMForecaster
+from safenergy.forecast.selector import select_forecast_method
 
 
 def forecast_serving(
@@ -13,7 +13,9 @@ def forecast_serving(
     issue_time: datetime,
     model_path: Optional[str] = None,
     horizon_hours: int = 1,
-    return_uncertainty: bool = True
+    return_uncertainty: bool = True,
+    asset_type: str = "solar",
+    metadata_dict: Optional[Dict[str, Any]] = None
 ) -> pd.DataFrame:
     """
     Generate forecast predictions from features, falling back to a baseline if a model isn't available.
@@ -48,16 +50,26 @@ def forecast_serving(
     # Often, features has the exact target column or something similar.
     # We will look for 'generation' or default to 10.0 for deterministic mock behaviour if missing
 
-    if "generation" in features.columns:
-        baseline_preds = persistence_baseline(features, target_col="generation", horizon_hours=horizon_hours)
-    else:
-        # If no generation column, generate a mock fallback of 10.0 to satisfy the scaffold contract
-        baseline_preds = pd.Series(10.0, index=features.index)
+    preds, meta = select_forecast_method(
+        df=features,
+        asset_type=asset_type,
+        metadata=metadata_dict or {},
+        horizon_hours=horizon_hours
+    )
 
-    df_out = pd.DataFrame({"point": baseline_preds}, index=features.index)
+    df_out = pd.DataFrame({"point": preds}, index=features.index)
 
     if return_uncertainty:
-        df_out["lower"] = df_out["point"] - 2.0
-        df_out["upper"] = df_out["point"] + 2.0
+        # Scale uncertainty bounds inversely with confidence
+        conf = meta.get("confidence_score", 0.0)
+        df_out["lower"] = df_out["point"] - (1.0 - conf) * 10.0
+        df_out["upper"] = df_out["point"] + (1.0 - conf) * 10.0
+
+    # Attach metadata columns
+    df_out["method"] = meta.get("method", "unknown")
+    df_out["confidence_score"] = meta.get("confidence_score", 0.0)
+    df_out["fallback_reason"] = meta.get("fallback_reason")
+    df_out["inputs_used"] = [meta.get("inputs_used", [])] * len(df_out)
+    df_out["missing_inputs"] = [meta.get("missing_inputs", [])] * len(df_out)
 
     return df_out
