@@ -18,7 +18,7 @@
 - [x] **S01: MVP Scope and Forecast Contract** `[sketch]` `risk:high` `depends:[]`
   > After this: The project has a documented region, horizons, target variable, data assumptions, and success contract.
 
-- [ ] **S02: Repository Structure and Configuration** `[sketch]` `risk:medium` `depends:[S01]`
+- [x] **S02: Repository Structure and Configuration** `[sketch]` `risk:medium` `depends:[S01]`
   > After this: A clean package layout and typed configuration surface exists for the prototype.
 
 - [ ] **S03: Data Ingestion and Quality Checks** `[sketch]` `risk:high` `depends:[S01,S02]`
