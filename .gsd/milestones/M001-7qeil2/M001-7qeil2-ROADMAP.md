@@ -45,7 +45,7 @@
 - [x] **S10: Storage Layer** `[sketch]` `risk:medium` `depends:[S03,S04]`
   > After this: Forecast, signal, and cache metadata can be stored and reloaded from DuckDB or Parquet.
 
-- [ ] **S11: FastAPI Backend** `[sketch]` `risk:medium` `depends:[S06,S09,S10]`
+- [x] **S11: FastAPI Backend** `[sketch]` `risk:medium` `depends:[S06,S09,S10]`
   > After this: FastAPI endpoints expose forecast, trading signal, and backtest functionality with explicit error handling.
 
 - [ ] **S12: Explanation Service** `[sketch]` `risk:medium` `depends:[S06,S09]`
