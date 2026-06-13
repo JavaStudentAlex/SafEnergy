@@ -22,7 +22,7 @@
 - [x] **S03: Provenance and Geospatial Metadata Backbone** `risk:medium` `depends:[S01,S02]`
   > After this: Forecast inputs and derived features carry provider, issue time, valid time, CRS, footprint, cache key, and quality metadata through storage.
 
-- [ ] **S04: Real Forecast Serving Path** `risk:high` `depends:[S01,S02,S03]`
+- [x] **S04: Real Forecast Serving Path** `risk:high` `depends:[S01,S02,S03]`
   > After this: The forecast predict endpoint uses normalized inputs, feature engineering, baselines, model inference, and storage instead of fixed point and interval constants.
 
 - [ ] **S05: End to End Orchestrator** `risk:high` `depends:[S04]`
