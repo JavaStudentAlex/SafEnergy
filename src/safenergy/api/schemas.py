@@ -170,3 +170,16 @@ class CommitmentMetrics(BaseModel):
     total_estimated_cost_eur: float
     total_avoided_cost_eur: float
     action_count: int
+
+
+class AnomalyDiagnostic(BaseModel):
+    category: str
+    severity: str
+    description: str
+
+
+class PlantHealthResponse(BaseModel):
+    plant_id: str
+    status: str
+    last_updated: datetime
+    anomalies: List[AnomalyDiagnostic]

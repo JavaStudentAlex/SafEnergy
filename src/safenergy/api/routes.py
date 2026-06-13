@@ -15,6 +15,7 @@ from safenergy.api.schemas import (
     MarketPriceResponse,
     OrchestratorAPIResponse,
     OrchestratorRequest,
+    PlantHealthResponse,
     PlantResponse,
     RecommendationRequest,
     RecommendationResponse,
@@ -25,6 +26,7 @@ from safenergy.api.schemas import (
 from safenergy.commitment.engine import recommend_action
 from safenergy.commitment.ledger import AcceptedAction, ActionLedger
 from safenergy.forecast.service import forecast_serving
+from safenergy.health.diagnostics import get_plant_health
 from safenergy.ingest.market import fetch_delu_prices
 from safenergy.ingest.plants import get_all_plants, get_plant_by_id
 from safenergy.ingest.weather import fetch_weather_forecast
@@ -578,3 +580,26 @@ def get_commitment_metrics(plant_id: str | None = None):
         )
     except Exception:
         raise HTTPException(status_code=500, detail="An error occurred while calculating commitment metrics.")
+
+@router.get("/plant-health", response_model=list[PlantHealthResponse], tags=["Health"])
+def list_plant_health():
+    """
+    Returns rule-based health diagnostics for all stable demo plants.
+    """
+    plants = get_all_plants()
+    results = []
+    for p in plants:
+        health = get_plant_health(p["plant_id"])
+        if health:
+            results.append(health)
+    return results
+
+@router.get("/plant-health/{plant_id}", response_model=PlantHealthResponse, tags=["Health"])
+def get_single_plant_health(plant_id: str):
+    """
+    Returns health diagnostics for a specific plant by its identifier.
+    """
+    health = get_plant_health(plant_id)
+    if not health:
+        raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
+    return health
