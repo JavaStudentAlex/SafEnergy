@@ -34,7 +34,7 @@
 - [x] **S07: Trading Backtest and Explanation Hardening** `risk:medium` `depends:[S05]`
   > After this: Backtest and explanation outputs document transaction-cost assumptions, leakage controls, issue-time constraints, and attribution limits tied to real forecast features.
 
-- [ ] **S08: API Hardening and Root Documentation** `risk:medium` `depends:[S04,S06,S07]`
+- [x] **S08: API Hardening and Root Documentation** `risk:medium` `depends:[S04,S06,S07]`
   > After this: A fresh user can read the root README, configure optional providers, run tests, start API and dashboard demos, and see safe API errors without raw exception leakage.
 
 ## Boundary Map
