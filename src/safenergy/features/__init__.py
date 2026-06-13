@@ -5,6 +5,10 @@ from safenergy.features.engineering import (
     create_time_features,
     split_temporal,
 )
+from safenergy.features.satellite import (
+    SatelliteFeatureSeed,
+    extract_satellite_features,
+)
 
 __all__ = [
     "align_weather_and_generation",
@@ -12,4 +16,6 @@ __all__ = [
     "create_target_deltas",
     "create_time_features",
     "split_temporal",
+    "SatelliteFeatureSeed",
+    "extract_satellite_features",
 ]

@@ -13,7 +13,7 @@
 
 ## Slices
 
-- [ ] **S01: Satellite Discovery and Feature Seed** `risk:high` `depends:[]`
+- [x] **S01: Satellite Discovery and Feature Seed** `risk:high` `depends:[]`
   > After this: A small region and time range either discovers satellite provider items with CRS and footprint metadata or returns a typed unavailable-provider diagnostic.
 
 - [ ] **S02: Live Market and Generation Adapter** `risk:high` `depends:[]`

@@ -25,6 +25,18 @@ class Settings(BaseSettings):
     COPERNICUS_USERNAME: str = ""
     COPERNICUS_PASSWORD: str = ""
 
+    # Optional Sentinel Hub
+    SENTINELHUB_CLIENT_ID: str = ""
+    SENTINELHUB_CLIENT_SECRET: str = ""
+
+    # Optional EUMETSAT
+    EUMETSAT_CONSUMER_KEY: str = ""
+    EUMETSAT_CONSUMER_SECRET: str = ""
+
+    # Optional Market
+    ENTSOE_API_TOKEN: str = ""
+    EIA_API_KEY: str = ""
+
     # Path overrides
     SAFENERGY_DATA_DIR: str = Field(default="data")
     SAFENERGY_CACHE_DIR: str = Field(default="data/cache")

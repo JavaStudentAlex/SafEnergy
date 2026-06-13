@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": "S2B_MSIL2A_20230601T163849_N0509_R120_T14RPU_20230601T210850",
+      "provider": "copernicus_dataspace",
+      "valid_time": "2023-06-01T16:38:49Z",
+      "issue_time": "2023-06-01T21:08:50Z",
+      "footprint": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.0, 30.0],
+            [-97.0, 30.0],
+            [-97.0, 31.0],
+            [-98.0, 31.0],
+            [-98.0, 30.0]
+          ]
+        ]
+      },
+      "crs": "EPSG:4326",
+      "cloud_cover": 12.5,
+      "cache_key": "sat_copernicus_S2B_MSIL2A_20230601T163849"
+    },
+    {
+      "id": "S2A_MSIL2A_20230603T163901_N0509_R120_T14RPU_20230603T210901",
+      "provider": "copernicus_dataspace",
+      "valid_time": "2023-06-03T16:39:01Z",
+      "issue_time": "2023-06-03T21:09:01Z",
+      "footprint": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.0, 30.0],
+            [-97.0, 30.0],
+            [-97.0, 31.0],
+            [-98.0, 31.0],
+            [-98.0, 30.0]
+          ]
+        ]
+      },
+      "crs": "EPSG:4326",
+      "cloud_cover": 85.0,
+      "cache_key": "sat_copernicus_S2A_MSIL2A_20230603T163901"
+    }
+  ]
+}
