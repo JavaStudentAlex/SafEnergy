@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
+from safenergy.commitment.ledger import AcceptedAction
 from safenergy.signals.explanation import ExplanationResponse
 from safenergy.signals.objects import BacktestAssumptions, TradingSignal
 from safenergy.signals.thresholds import SignalLevel
@@ -183,3 +184,15 @@ class PlantHealthResponse(BaseModel):
     status: str
     last_updated: datetime
     anomalies: List[AnomalyDiagnostic]
+
+class DashboardPlantOverview(BaseModel):
+    plant: PlantResponse
+    health: PlantHealthResponse
+    weather_live: Optional[WeatherResponse] = None
+    forecast_nowcast: Optional[ForecastResponse] = None
+
+class DashboardOverviewResponse(BaseModel):
+    portfolio_metrics: CommitmentMetrics
+    market_prices: MarketPriceResponse
+    recent_actions: List[AcceptedAction]
+    plants: List[DashboardPlantOverview]

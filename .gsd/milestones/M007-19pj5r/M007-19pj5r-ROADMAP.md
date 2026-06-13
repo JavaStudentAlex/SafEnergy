@@ -15,7 +15,7 @@
 - [x] **S01: Rule Based Plant Health** `risk:medium` `depends:[]`
   > After this: After this, the frontend Plant Health Monitor can show meaningful demo statuses and anomalies for each plant.
 
-- [ ] **S02: Dashboard Overview Aggregation** `risk:high` `depends:[S01]`
+- [x] **S02: Dashboard Overview Aggregation** `risk:high` `depends:[S01]`
   > After this: After this, the frontend can load one portfolio overview endpoint for the dashboard while retaining detailed endpoint drill-downs.
 
 - [ ] **S03: Demo Closure and Honesty Guardrails** `risk:medium` `depends:[S01,S02]`

@@ -15,6 +15,7 @@
 - 🔄 **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S02 of M007-19pj5r: Implemented dashboard overview aggregation endpoint and portfolio tab in frontend.
 - Completed S01 of M007-19pj5r: Implemented rule-based plant health API endpoint.
 - Completed S03 of M006-cgt3hd: Implemented /commitment/metrics endpoint and test_commitment_smoke.py end-to-end test.
 - Completed S02 of M006-cgt3hd: Implemented Accepted Action Ledger to store and retrieve recommended commitment actions.
