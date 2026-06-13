@@ -2,13 +2,14 @@
 
 **Active Milestone:** M001-7qeil2: Renewable Forecasting Trading Prototype
 **Active Slice:** None
-**Phase:** building
+**Phase:** completed
 **Requirements Status:** 0 active · 0 validated · 0 deferred · 0 out of scope
 
 ## Milestone Registry
 - ✅ **M001-7qeil2:** Renewable Forecasting Trading Prototype
 
 ## Recent Decisions
+- Verified all tasks in M001-7qeil2 are complete and tests are passing.
 - Completed S14: Testing and Final Demo Polish, including documentation and smoke tests.
 - Implemented Dashboard and Backtest Views using Streamlit for S13.
 - Implemented Explanation Service including human-readable summaries, confidence, and attribution for S12.
@@ -27,4 +28,4 @@
 - None
 
 ## Next Action
-None. Milestone M001-7qeil2 is complete.
+None. Milestone M001-7qeil2 is verified complete.
