@@ -17,7 +17,7 @@
 - [x] **S02: Weather Overlay Endpoints** `risk:medium` `depends:[S01]`
   > After this: After this, the frontend can render current weather and short-horizon weather overlays for a selected plant.
 
-- [ ] **S03: Foundation Contract Verification** `risk:low` `depends:[S01,S02]`
+- [x] **S03: Foundation Contract Verification** `risk:low` `depends:[S01,S02]`
   > After this: After this, a documented plant plus weather contract is ready for frontend wiring.
 
 ## Boundary Map

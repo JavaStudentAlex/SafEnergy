@@ -1,7 +1,7 @@
 # GSD State
 
-**Active Milestone:** M004-njfgw0: Frontend Alignment Foundation
-**Active Slice:** S03: Foundation Contract Verification
+**Active Milestone:** M005-9qprou: Forecast and Market Credibility Layer
+**Active Slice:** S01: Physics Informed PV Forecast
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -9,12 +9,13 @@
 - 🔄 **M001-7qeil2:** Renewable Forecasting Trading Prototype
 - 🔄 **M002-7jq3dt:** Live Data Forecast Serving Integration
 - ⬜ **M003-4jb56n:** No Training Forecast Method Stack
-- 🔄 **M004-njfgw0:** Frontend Alignment Foundation
-- ⬜ **M005-9qprou:** Forecast and Market Credibility Layer
+- ✅ **M004-njfgw0:** Frontend Alignment Foundation
+- 🔄 **M005-9qprou:** Forecast and Market Credibility Layer
 - ⬜ **M006-cgt3hd:** Commitment Action Loop
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S03 of M004-njfgw0: Verified Foundation Contract including API tests and OpenAPI schemas.
 - Completed S02 of M004-njfgw0: Implemented Weather Overlay Endpoints (`/weather/live` and `/weather/forecast`) providing frontend-ready weather data and deterministic fixture-backed behavior.
 - Completed S01 of M004-njfgw0: Implemented Plant Registry Contract endpoints `/plants` and `/plants/{plant_id}`.
 - Completed S06 of M003-4jb56n: Documented rationale for deterministic baselines and added end-to-end integration tests to test_no_training_stack.py.
