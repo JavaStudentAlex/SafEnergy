@@ -19,7 +19,7 @@
 - [x] **S02: Live Market and Generation Adapter** `risk:high` `depends:[]`
   > After this: A market adapter normalizes live or fixture-backed ERCOT-style price and generation records with issue-time-safe provenance and staleness checks.
 
-- [ ] **S03: Provenance and Geospatial Metadata Backbone** `risk:medium` `depends:[S01,S02]`
+- [x] **S03: Provenance and Geospatial Metadata Backbone** `risk:medium` `depends:[S01,S02]`
   > After this: Forecast inputs and derived features carry provider, issue time, valid time, CRS, footprint, cache key, and quality metadata through storage.
 
 - [ ] **S04: Real Forecast Serving Path** `risk:high` `depends:[S01,S02,S03]`
