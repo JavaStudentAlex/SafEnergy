@@ -50,9 +50,12 @@ def test_generate_explanation_with_features():
 
     assert len(response.attribution) == 3
     for attr in response.attribution:
+        assert attr.source_label == "heuristic"
         if attr.feature_name == "cloud_cover":
             assert attr.contribution_mw == -10.0
             assert "Decreases" in attr.description
+
+    assert "SHAP and counterfactual attribution are not implemented" in response.attribution_limitations
 
 
 def test_generate_explanation_with_market_price():

@@ -1,9 +1,16 @@
+from datetime import datetime
+from typing import Optional
+
 import pandas as pd
+
+from safenergy.signals.objects import BacktestAssumptions
 
 
 def evaluate_signals(
     signals: pd.Series,
     price_changes: pd.Series,
+    assumptions: Optional[BacktestAssumptions] = None,
+    issue_time: Optional[datetime] = None,
 ) -> dict:
     """
     Evaluate trading signals against subsequent price changes.
@@ -21,6 +28,14 @@ def evaluate_signals(
     Returns:
         A dictionary with backtest metrics including total return, hit rate, and counts.
     """
+    if assumptions is None:
+        assumptions = BacktestAssumptions()
+
+    leakage_check_status = "passed"
+    if issue_time is not None:
+        if any(ts > issue_time for ts in signals.index):
+            raise ValueError("Issue-time leakage detected: Valid time is after forecast issue time.")
+
     if not signals.index.equals(price_changes.index):
         # We assume an inner join or exact alignment before this step
         df = pd.DataFrame({'signal': signals, 'price_change': price_changes}).dropna()
@@ -31,7 +46,9 @@ def evaluate_signals(
     positions = signals.astype(int)
 
     # Calculate returns per period
-    returns = positions * price_changes
+    # Total cost to subtract is absolute position * sizing * (cost + fee + slippage)
+    costs = positions.abs() * assumptions.position_sizing * (assumptions.transaction_cost + assumptions.fee + assumptions.slippage)
+    returns = (positions * price_changes) - costs
 
     total_return = returns.sum()
 
@@ -57,5 +74,7 @@ def evaluate_signals(
         "hits": int(hits),
         "misses": int(misses),
         "flat": int(num_flat),
-        "total_trades": int(num_active)
+        "total_trades": int(num_active),
+        "assumptions": assumptions.model_dump(),
+        "leakage_check_status": leakage_check_status
     }

@@ -8,6 +8,7 @@ class ExplanationAttribution(BaseModel):
     feature_name: str
     contribution_mw: float
     description: str
+    source_label: str = Field(default="heuristic", description="heuristic, model feature importance, satellite feature provenance, or unavailable")
 
 
 class ExplanationResponse(BaseModel):
@@ -21,6 +22,7 @@ class ExplanationResponse(BaseModel):
     attribution: List[ExplanationAttribution] = Field(
         default_factory=list, description="Detailed feature contributions."
     )
+    attribution_limitations: str = Field(default="SHAP and counterfactual attribution are not implemented. Using heuristics.")
 
     model_config = ConfigDict()
 
@@ -77,7 +79,8 @@ def generate_explanation(
                 ExplanationAttribution(
                     feature_name=name,
                     contribution_mw=value,
-                    description=desc
+                    description=desc,
+                    source_label="heuristic"
                 )
             )
 

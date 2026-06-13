@@ -81,7 +81,12 @@ def compute_backtest(request: BacktestRequest):
     s_price_changes = pd.Series(price_changes, index=index)
 
     try:
-        results = evaluate_signals(s_signals, s_price_changes)
+        results = evaluate_signals(
+            s_signals,
+            s_price_changes,
+            assumptions=request.assumptions,
+            issue_time=request.issue_time
+        )
         return BacktestResponse(**results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

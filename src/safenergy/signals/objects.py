@@ -6,6 +6,21 @@ from pydantic import BaseModel, ConfigDict, Field
 from safenergy.signals.thresholds import SignalLevel
 
 
+class BacktestAssumptions(BaseModel):
+    """
+    Assumptions used during backtest evaluation to ensure decision-support claims
+    are safer and more explainable without implying production trading performance.
+    """
+    transaction_cost: float = Field(default=0.0, description="Cost per transaction ($).")
+    fee: float = Field(default=0.0, description="Additional fee per period/transaction ($).")
+    slippage: float = Field(default=0.0, description="Expected slippage per trade ($).")
+    liquidity: float = Field(default=1.0, description="Liquidity constraint modifier.")
+    position_sizing: float = Field(default=1.0, description="Position sizing multiplier.")
+    delivery_interval: int = Field(default=1, description="Delivery interval (periods).")
+    market_holiday: bool = Field(default=False, description="Whether the backtest covers a market holiday.")
+    no_live_trading: bool = Field(default=True, description="Strictly true to indicate this is not live trading.")
+
+
 class TradingSignal(BaseModel):
     """
     Represents a discrete trading signal generated from a forecast delta

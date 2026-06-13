@@ -1,6 +1,9 @@
+
 import pandas as pd
+import pytest
 
 from safenergy.signals.backtest import evaluate_signals
+from safenergy.signals.objects import BacktestAssumptions
 from safenergy.signals.thresholds import SignalLevel
 
 
@@ -68,3 +71,25 @@ def test_evaluate_signals_all_neutral():
     assert metrics["total_return"] == 0.0
     assert metrics["total_trades"] == 0
     assert metrics["hit_rate"] == 0.0
+
+def test_evaluate_signals_with_assumptions():
+    idx = pd.date_range("2024-01-01 00:00:00", periods=2, freq="h", tz="UTC")
+    signals = pd.Series([SignalLevel.WEAK_LONG, SignalLevel.STRONG_SHORT], index=idx) # 1, -2
+    price_changes = pd.Series([10.0, -5.0], index=idx) # +10, +10 gross returns = +20
+
+    # Total positions abs = 3. Transaction cost = 1.0, slippage = 0.5. Total cost = 3 * 1.5 = 4.5
+    # Net return = 20.0 - 4.5 = 15.5
+    assumptions = BacktestAssumptions(transaction_cost=1.0, slippage=0.5)
+
+    metrics = evaluate_signals(signals, price_changes, assumptions=assumptions)
+    assert metrics["total_return"] == 15.5
+
+def test_evaluate_signals_leakage_failure():
+    idx = pd.date_range("2024-01-01 00:00:00", periods=2, freq="h", tz="UTC")
+    signals = pd.Series([SignalLevel.WEAK_LONG, SignalLevel.WEAK_LONG], index=idx)
+    price_changes = pd.Series([10.0, 10.0], index=idx)
+
+    issue_time = pd.Timestamp("2023-12-31 00:00:00", tz="UTC")
+
+    with pytest.raises(ValueError, match="Issue-time leakage detected"):
+        evaluate_signals(signals, price_changes, issue_time=issue_time)
