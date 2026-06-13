@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
-<!-- gsd:codebase-meta {"generatedAt":"2026-06-13T09:10:55Z","fingerprint":"7af9d93f48cbba36eb1d1b1d208783ff39405843","fileCount":90,"truncated":false} -->
+Generated: 2026-06-13T21:50:51Z | Files: 114 | Described: 0/114
+<!-- gsd:codebase-meta {"generatedAt":"2026-06-13T21:50:51Z","fingerprint":"cf938de0aca52e35d00ce19856242438882ebe51","fileCount":114,"truncated":false} -->
 
 ### (root)/
 - `.env.example`
@@ -9,7 +9,9 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 - `AGENTS.md`
 - `CLAUDE.md`
 - `GEMINI.md`
+- `plan.md`
 - `pyproject.toml`
+- `README.md`
 - `run_dashboard.py`
 - `skills-lock.json`
 
@@ -52,8 +54,10 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 - `docs/CONFIGURATION.md`
 - `docs/demo.md`
 - `docs/forecast_contract.md`
+- `docs/no_training_forecast.md`
 
 ### scripts/
+- `scripts/market_forecast_smoke.py`
 - `scripts/smoke_check.py`
 
 ### src/safenergy/
@@ -65,6 +69,11 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 - `src/safenergy/api/main.py`
 - `src/safenergy/api/routes.py`
 - `src/safenergy/api/schemas.py`
+
+### src/safenergy/commitment/
+- `src/safenergy/commitment/__init__.py`
+- `src/safenergy/commitment/engine.py`
+- `src/safenergy/commitment/ledger.py`
 
 ### src/safenergy/core/
 - `src/safenergy/core/__init__.py`
@@ -82,11 +91,17 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 - `src/safenergy/forecast/baselines.py`
 - `src/safenergy/forecast/evaluate.py`
 - `src/safenergy/forecast/models.py`
+- `src/safenergy/forecast/selector.py`
 - `src/safenergy/forecast/service.py`
+
+### src/safenergy/health/
+- `src/safenergy/health/__init__.py`
+- `src/safenergy/health/diagnostics.py`
 
 ### src/safenergy/ingest/
 - `src/safenergy/ingest/__init__.py`
 - `src/safenergy/ingest/market.py`
+- `src/safenergy/ingest/plants.py`
 - `src/safenergy/ingest/satellite.py`
 - `src/safenergy/ingest/weather.py`
 
@@ -108,22 +123,10 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 - `src/safenergy/storage/client.py`
 
 ### tests/
-- `tests/__init__.py`
-- `tests/conftest.py`
-- `tests/test_api_orchestrator.py`
-- `tests/test_api.py`
-- `tests/test_backtest.py`
-- `tests/test_baselines.py`
-- `tests/test_dashboard.py`
-- `tests/test_evaluate.py`
-- `tests/test_explanation.py`
-- `tests/test_features.py`
-- `tests/test_forecast_models.py`
-- `tests/test_forecast_service.py`
-- `tests/test_orchestrator.py`
-- `tests/test_signals_pipeline.py`
-- `tests/test_signals.py`
-- `tests/test_storage.py`
+- *(26 files: 26 .py)*
+
+### tests/api/
+- `tests/api/test_ledger.py`
 
 ### tests/core/
 - `tests/core/test_config.py`
@@ -132,6 +135,7 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 - `tests/features/test_satellite_features.py`
 
 ### tests/fixtures/market/
+- `tests/fixtures/market/delu_prices.csv`
 - `tests/fixtures/market/generation.csv`
 - `tests/fixtures/market/prices.csv`
 
@@ -140,5 +144,6 @@ Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
 
 ### tests/ingest/
 - `tests/ingest/test_market.py`
+- `tests/ingest/test_plants.py`
 - `tests/ingest/test_satellite.py`
 - `tests/ingest/test_weather.py`
