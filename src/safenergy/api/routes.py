@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 import pandas as pd
@@ -7,6 +8,8 @@ from safenergy.api.schemas import (
     BacktestRequest,
     BacktestResponse,
     CommitmentMetrics,
+    DashboardOverviewResponse,
+    DashboardPlantOverview,
     ExplanationRequest,
     ForecastPrediction,
     ForecastRequest,
@@ -603,3 +606,76 @@ def get_single_plant_health(plant_id: str):
     if not health:
         raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
     return health
+
+@router.get("/dashboard/overview", response_model=DashboardOverviewResponse, tags=["Dashboard"])
+def get_dashboard_overview():
+    """
+    Returns an aggregated portfolio overview for the dashboard.
+    """
+    plant_dicts = get_all_plants()
+
+    # Market
+    try:
+        market_prices = get_market_prices(zone="DE-LU", hours=24)
+    except Exception as e:
+        logging.warning(f"Market prices error: {e}")
+        market_prices = MarketPriceResponse(
+            zone="DE-LU", valid_time=datetime.now(timezone.utc), provenance="none", interval_minutes=15, points=[]
+        )
+
+    # Commitment
+    try:
+        metrics = get_commitment_metrics(plant_id=None)
+    except Exception as e:
+        logging.warning(f"Metrics error: {e}")
+        metrics = CommitmentMetrics(
+            total_shortfall_mwh=0.0,
+            total_estimated_cost_eur=0.0,
+            total_avoided_cost_eur=0.0,
+            action_count=0
+        )
+
+    try:
+        actions = get_commitment_actions(plant_id=None)
+    except Exception as e:
+        logging.warning(f"Actions error: {e}")
+        actions = []
+
+    plant_overviews = []
+    for plant_dict in plant_dicts:
+        plant_id = plant_dict["plant_id"]
+        plant_resp = PlantResponse(**plant_dict)
+
+        try:
+            health = get_plant_health(plant_id)
+        except Exception as e:
+            logging.warning(f"Health error: {e}")
+            health = PlantHealthResponse(plant_id=plant_id, status="unknown", last_updated=datetime.now(timezone.utc), anomalies=[])
+
+        weather = None
+        try:
+            weather = get_weather_live(plant_id)
+        except Exception as e:
+            logging.warning(f"Weather/Forecast error: {e}")
+            pass
+
+        forecast = None
+        try:
+            forecast = get_forecast(plant_id, horizon_minutes=60)
+        except Exception as e:
+            logging.warning(f"Weather/Forecast error: {e}")
+            pass
+
+        plant_overviews.append(DashboardPlantOverview(
+            plant=plant_resp,
+            health=health,
+            weather_live=weather,
+            forecast_nowcast=forecast
+        ))
+
+    return DashboardOverviewResponse(
+        portfolio_metrics=metrics,
+        market_prices=market_prices,
+        recent_actions=actions,
+        plants=plant_overviews
+    )

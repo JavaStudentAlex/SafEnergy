@@ -15,13 +15,60 @@ st.set_page_config(
 st.title("SafEnergy Forecasting and Trading Dashboard")
 st.markdown("Visualize renewable forecasts, trading signals, and backtest results.")
 
-tab_orchestrator, tab_forecasts, tab_signals, tab_backtest = st.tabs([
+tab_portfolio, tab_orchestrator, tab_forecasts, tab_signals, tab_backtest = st.tabs([
+    "Portfolio Overview",
     "Orchestrator",
     "Forecasts",
     "Trading Signals",
     "Backtest",
 ])
 
+
+
+with tab_portfolio:
+    st.header("Portfolio Overview")
+    if st.button("Refresh Portfolio", key="btn_refresh_portfolio"):
+        try:
+            response = httpx.get(f"{API_URL}/dashboard/overview")
+            if response.status_code == 200:
+                data = response.json()
+                metrics = data.get("portfolio_metrics", {})
+                market = data.get("market_prices", {})
+                actions = data.get("recent_actions", [])
+                plants = data.get("plants", [])
+
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Total Shortfall (MWh)", f"{metrics.get('total_shortfall_mwh', 0):.1f}")
+                with col2:
+                    st.metric("Estimated Cost (EUR)", f"{metrics.get('total_estimated_cost_eur', 0):.1f}")
+                with col3:
+                    st.metric("Avoided Imbalance Cost (EUR)", f"{metrics.get('total_avoided_cost_eur', 0):.1f}")
+
+                st.subheader("Market Prices")
+                if market and market.get("points"):
+                    st.dataframe(pd.DataFrame(market["points"]).head(5))
+                else:
+                    st.info("No market prices available.")
+
+                st.subheader("Recent Actions")
+                if actions:
+                    st.dataframe(pd.DataFrame(actions))
+                else:
+                    st.info("No recent actions.")
+
+                st.subheader("Plant Statuses")
+                for po in plants:
+                    plant_info = po.get("plant", {})
+                    health_info = po.get("health", {})
+                    st.write(f"**{plant_info.get('name', 'Unknown')}** ({plant_info.get('plant_id', '')}) - Status: {health_info.get('status', 'unknown')}")
+                    if health_info.get("anomalies"):
+                        for anom in health_info["anomalies"]:
+                            st.warning(f"{anom.get('category')}: {anom.get('description')} ({anom.get('severity')})")
+            else:
+                st.error(f"API Error {response.status_code}: {response.text}")
+        except Exception as e:
+            st.error(f"Request failed: {e}")
 
 with tab_orchestrator:
     st.header("End-to-End Orchestrator")
