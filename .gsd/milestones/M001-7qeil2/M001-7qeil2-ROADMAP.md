@@ -42,7 +42,7 @@
 - [x] **S09: Trading Signal and Backtest Engine** `[sketch]` `risk:high` `depends:[S08]`
   > After this: Trading signal objects, price sensitivity, risk filters, and backtest metrics can be generated from forecast deltas.
 
-- [ ] **S10: Storage Layer** `[sketch]` `risk:medium` `depends:[S03,S04]`
+- [x] **S10: Storage Layer** `[sketch]` `risk:medium` `depends:[S03,S04]`
   > After this: Forecast, signal, and cache metadata can be stored and reloaded from DuckDB or Parquet.
 
 - [ ] **S11: FastAPI Backend** `[sketch]` `risk:medium` `depends:[S06,S09,S10]`
