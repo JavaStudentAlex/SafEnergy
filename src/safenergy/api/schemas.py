@@ -164,3 +164,9 @@ class RecommendationResponse(BaseModel):
     avoided_imbalance_cost_eur: float
     confidence_score: float
     explanation: str
+
+class CommitmentMetrics(BaseModel):
+    total_shortfall_mwh: float
+    total_estimated_cost_eur: float
+    total_avoided_cost_eur: float
+    action_count: int

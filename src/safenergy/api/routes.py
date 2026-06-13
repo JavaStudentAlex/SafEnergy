@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException
 from safenergy.api.schemas import (
     BacktestRequest,
     BacktestResponse,
+    CommitmentMetrics,
     ExplanationRequest,
     ForecastPrediction,
     ForecastRequest,
@@ -555,3 +556,25 @@ def get_commitment_actions(plant_id: str | None = None):
         return ledger.get_actions(plant_id)
     except Exception:
         raise HTTPException(status_code=500, detail="An error occurred while retrieving accepted actions.")
+
+@router.get("/commitment/metrics", response_model=CommitmentMetrics, tags=["Commitment"])
+def get_commitment_metrics(plant_id: str | None = None):
+    """
+    Calculates aggregated metrics from the accepted commitment actions.
+    """
+    try:
+        ledger = get_action_ledger()
+        actions = ledger.get_actions(plant_id)
+
+        total_shortfall_mwh = sum(a.commitment_gap_mwh for a in actions)
+        total_estimated_cost_eur = sum(a.estimated_cost_eur for a in actions)
+        total_avoided_cost_eur = sum(a.avoided_imbalance_cost_eur for a in actions)
+
+        return CommitmentMetrics(
+            total_shortfall_mwh=total_shortfall_mwh,
+            total_estimated_cost_eur=total_estimated_cost_eur,
+            total_avoided_cost_eur=total_avoided_cost_eur,
+            action_count=len(actions)
+        )
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred while calculating commitment metrics.")

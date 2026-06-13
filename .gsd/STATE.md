@@ -1,7 +1,7 @@
 # GSD State
 
-**Active Milestone:** M006-cgt3hd: Commitment Action Loop
-**Active Slice:** S03: Metrics and Commitment Smoke
+**Active Milestone:** M007-19pj5r: Portfolio Health Dashboard Closure
+**Active Slice:** S01: Basic Portfolio Status UI
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -11,10 +11,11 @@
 - ⬜ **M003-4jb56n:** No Training Forecast Method Stack
 - ✅ **M004-njfgw0:** Frontend Alignment Foundation
 - ✅ **M005-9qprou:** Forecast and Market Credibility Layer
-- 🔄 **M006-cgt3hd:** Commitment Action Loop
-- ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
+- ✅ **M006-cgt3hd:** Commitment Action Loop
+- 🔄 **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S03 of M006-cgt3hd: Implemented /commitment/metrics endpoint and test_commitment_smoke.py end-to-end test.
 - Completed S02 of M006-cgt3hd: Implemented Accepted Action Ledger to store and retrieve recommended commitment actions.
 - Completed S01 of M006-cgt3hd: Implemented Recommendation Engine engine logic and API endpoint.
 - Completed S03 of M005-9qprou: Implemented Forecast Market Contract Smoke integration tests.
