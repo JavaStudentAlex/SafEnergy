@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from safenergy.commitment.ledger import AcceptedAction
 from safenergy.signals.explanation import ExplanationResponse
@@ -196,3 +196,4 @@ class DashboardOverviewResponse(BaseModel):
     market_prices: MarketPriceResponse
     recent_actions: List[AcceptedAction]
     plants: List[DashboardPlantOverview]
+    demo_metadata: Dict[str, str] = Field(default_factory=dict, description="Honest descriptors for demo capabilities")
