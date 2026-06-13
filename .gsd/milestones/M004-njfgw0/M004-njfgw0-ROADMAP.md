@@ -11,7 +11,7 @@
 
 ## Slices
 
-- [ ] **S01: Plant Registry Contract** `risk:medium` `depends:[]`
+- [x] **S01: Plant Registry Contract** `risk:medium` `depends:[]`
   > After this: After this, the frontend can list demo plants and open a selected plant with stable metadata.
 
 - [ ] **S02: Weather Overlay Endpoints** `risk:medium` `depends:[S01]`

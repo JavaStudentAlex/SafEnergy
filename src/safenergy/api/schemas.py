@@ -106,3 +106,14 @@ class OrchestratorAPIResponse(BaseModel):
     forecast_data_state: str = "live"
 
     model_config = {"arbitrary_types_allowed": True}
+
+class PlantResponse(BaseModel):
+    plant_id: str
+    name: str
+    latitude: float
+    longitude: float
+    timezone: str
+    capacity_mw: float
+    status: str
+    battery_capacity_mwh: float
+    metadata_dict: Dict[str, Any]

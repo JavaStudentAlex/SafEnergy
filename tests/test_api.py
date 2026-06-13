@@ -131,3 +131,28 @@ def test_explain_forecast():
     assert "wind_speed" in data["top_drivers"]
     assert len(data["attribution"]) == 2
     assert "negative" in data["summary"]
+
+def test_list_plants():
+    response = client.get("/plants")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    assert data[0]["plant_id"] == "pv-texas-01"
+    assert data[1]["plant_id"] == "pv-texas-02"
+
+
+def test_get_plant():
+    response = client.get("/plants/pv-texas-01")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["plant_id"] == "pv-texas-01"
+    assert data["name"] == "Texas Solar 1"
+    assert data["capacity_mw"] == 150.0
+    assert data["status"] == "active"
+
+
+def test_get_plant_not_found():
+    response = client.get("/plants/non-existent-plant")
+    assert response.status_code == 404
+    data = response.json()
+    assert data["detail"] == "Plant non-existent-plant not found"

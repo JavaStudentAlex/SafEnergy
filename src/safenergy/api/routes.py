@@ -12,9 +12,11 @@ from safenergy.api.schemas import (
     ForecastResponse,
     OrchestratorAPIResponse,
     OrchestratorRequest,
+    PlantResponse,
     SignalRequest,
 )
 from safenergy.forecast.service import forecast_serving
+from safenergy.ingest.plants import get_all_plants, get_plant_by_id
 from safenergy.orchestrator.pipeline import run_end_to_end_pipeline
 from safenergy.signals.backtest import evaluate_signals
 from safenergy.signals.explanation import ExplanationResponse, generate_explanation
@@ -203,3 +205,20 @@ def run_orchestrator(request: OrchestratorRequest):
         )
     except Exception:
         raise HTTPException(status_code=500, detail="An error occurred during orchestrator pipeline execution.")
+
+@router.get("/plants", response_model=list[PlantResponse], tags=["Plants"])
+def list_plants():
+    """
+    Returns a list of all stable demo PV plants.
+    """
+    return get_all_plants()
+
+@router.get("/plants/{plant_id}", response_model=PlantResponse, tags=["Plants"])
+def get_plant(plant_id: str):
+    """
+    Returns metadata for a specific plant by its identifier.
+    """
+    plant = get_plant_by_id(plant_id)
+    if plant is None:
+        raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
+    return plant
