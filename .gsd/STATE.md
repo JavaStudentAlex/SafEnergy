@@ -1,7 +1,7 @@
 # GSD State
 
-**Active Milestone:** M001-7qeil2: Renewable Forecasting Trading Prototype
-**Active Slice:** S01: MVP Scope and Forecast Contract
+**Active Milestone:** M002-7jq3dt: Live Data Forecast Serving Integration
+**Active Slice:** S08: API Hardening and Root Documentation
 **Phase:** refining
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -15,6 +15,7 @@
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S07 of M002-7jq3dt: Added backtest assumptions including transaction costs and slippage, enforced issue-time leakage guard, and added source attribution limitations to explanation payload.
 - D001 (M003-4jb56n planning): How to represent the no-training forecast strategy -> Create a separate queued milestone M003-4jb56n focused only on the unique no-training forecast method stack
 - Completed S06 of M002-7jq3dt: Refactored the Streamlit dashboard to hit FastAPI endpoints instead of calling python functions directly, added Orchestrator tab.
 - Completed S05 of M002-7jq3dt: Created End to End Orchestrator which seamlessly runs data retrieval, feature building, inference, signals generation and explanations.
@@ -41,4 +42,4 @@
 - None
 
 ## Next Action
-Refine sketch slice S01 (MVP Scope and Forecast Contract) using prior slice context.
+Refine sketch slice S08 (API Hardening and Root Documentation) using prior slice context.

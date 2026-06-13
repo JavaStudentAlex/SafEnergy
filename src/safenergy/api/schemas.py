@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 from safenergy.signals.explanation import ExplanationResponse
-from safenergy.signals.objects import TradingSignal
+from safenergy.signals.objects import BacktestAssumptions, TradingSignal
 from safenergy.signals.thresholds import SignalLevel
 
 
@@ -55,6 +55,8 @@ class BacktestInputRow(BaseModel):
 
 class BacktestRequest(BaseModel):
     data: List[BacktestInputRow]
+    assumptions: Optional[BacktestAssumptions] = None
+    issue_time: Optional[datetime] = None
 
 
 class BacktestResponse(BaseModel):
@@ -64,6 +66,8 @@ class BacktestResponse(BaseModel):
     misses: int
     flat: int
     total_trades: int
+    assumptions: dict
+    leakage_check_status: str
 
 
 class ExplanationRequest(BaseModel):

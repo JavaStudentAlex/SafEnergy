@@ -31,7 +31,7 @@
 - [x] **S06: Dashboard Backend Integration** `risk:medium` `depends:[S05]`
   > After this: The Streamlit dashboard requests forecasts from the FastAPI backend or a shared service client and displays live, cached, fixture, and unavailable states clearly.
 
-- [ ] **S07: Trading Backtest and Explanation Hardening** `risk:medium` `depends:[S05]`
+- [x] **S07: Trading Backtest and Explanation Hardening** `risk:medium` `depends:[S05]`
   > After this: Backtest and explanation outputs document transaction-cost assumptions, leakage controls, issue-time constraints, and attribution limits tied to real forecast features.
 
 - [ ] **S08: API Hardening and Root Documentation** `risk:medium` `depends:[S04,S06,S07]`

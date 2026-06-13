@@ -118,9 +118,11 @@ with tab_forecasts:
                         st.metric("Uncertainty (MW)", f"{explanation['uncertainty_mw']:.1f}")
                         st.write("**Top Drivers:**", ", ".join(explanation["top_drivers"]))
 
+                        st.write(f"**Limitations:** {explanation.get('attribution_limitations', '')}")
                         st.write("**Attribution:**")
                         for attr in explanation["attribution"]:
-                            st.write(f"- {attr['feature_name']}: {attr['contribution_mw']:.1f} MW ({attr['description']})")
+                            source = attr.get('source_label', 'heuristic')
+                            st.write(f"- {attr['feature_name']} [{source}]: {attr['contribution_mw']:.1f} MW ({attr['description']})")
                 else:
                     st.error(f"API Error {response.status_code}: {response.text}")
             except Exception as e:
@@ -198,6 +200,12 @@ with tab_backtest:
     col1, col2 = st.columns(2)
 
     with col1:
+        st.subheader("Backtest Assumptions")
+        st.checkbox("No Live Trading Constraint", value=True, disabled=True)
+        tx_cost = st.number_input("Transaction Cost ($)", value=0.0, step=0.1, key="bt_tx_cost")
+        fee = st.number_input("Fee ($)", value=0.0, step=0.1, key="bt_fee")
+        slippage = st.number_input("Slippage ($)", value=0.0, step=0.1, key="bt_slip")
+
         st.subheader("Backtest Data (comma-separated)")
         bt_signals_input = st.text_input("Signals (-2, -1, 0, 1, 2)", value="1, 2, -1, -2, 0", key="bt_signals")
         bt_prices_input = st.text_input("Price Changes ($)", value="5.0, 10.0, -5.0, 20.0, 10.0", key="bt_prices")
@@ -217,7 +225,15 @@ with tab_backtest:
                      "price_change": float(p)}
                     for ts, s, p in zip(index, sig_vals, price_changes)
                 ]
-                payload = {"data": data_list}
+                payload = {
+                    "data": data_list,
+                    "assumptions": {
+                        "transaction_cost": tx_cost,
+                        "fee": fee,
+                        "slippage": slippage,
+                        "no_live_trading": True
+                    }
+                }
 
                 response = httpx.post(f"{API_URL}/trading/backtest", json=payload)
                 if response.status_code == 200:
@@ -232,6 +248,7 @@ with tab_backtest:
                         st.write(f"- Misses: {results['misses']}")
                         st.write(f"- Flat Trades: {results['flat']}")
                         st.write(f"- Total Active Trades: {results['total_trades']}")
+                        st.write(f"- Leakage Check: {results.get('leakage_check_status')}")
                 else:
                     st.error(f"API Error {response.status_code}: {response.text}")
 

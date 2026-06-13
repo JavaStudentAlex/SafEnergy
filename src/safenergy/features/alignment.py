@@ -1,11 +1,17 @@
 import logging
+from datetime import datetime
+from typing import Optional
 
 import pandas as pd
 
 from safenergy.ingest.market import GenerationDataResponse, MarketDataResponse
 
 
-def align_weather_and_generation(weather_df: pd.DataFrame, generation_df: pd.DataFrame | GenerationDataResponse) -> pd.DataFrame:
+def align_weather_and_generation(
+    weather_df: pd.DataFrame,
+    generation_df: pd.DataFrame | GenerationDataResponse,
+    issue_time: Optional[datetime] = None
+) -> pd.DataFrame:
     """
     Aligns weather and generation data into a single feature DataFrame.
     Expects both dataframes to have a timezone-aware DatetimeIndex.
@@ -28,6 +34,15 @@ def align_weather_and_generation(weather_df: pd.DataFrame, generation_df: pd.Dat
         generation_df.index = generation_df.index.tz_localize("UTC")
     else:
         generation_df.index = generation_df.index.tz_convert("UTC")
+
+    # Enforce issue time leakage guard
+    if issue_time is not None:
+        initial_weather_len = len(weather_df)
+        initial_gen_len = len(generation_df)
+        weather_df = weather_df[weather_df.index <= issue_time]
+        generation_df = generation_df[generation_df.index <= issue_time]
+        if len(weather_df) < initial_weather_len or len(generation_df) < initial_gen_len:
+            logging.warning("Issue-time leakage prevented: some records were dropped because their valid time was > issue_time.")
 
     # Resample to 1h in case of missing or different frequencies, using interpolation or forward fill as needed
     # We use asfreq to ensure the index is strict 1h

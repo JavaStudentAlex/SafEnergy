@@ -34,6 +34,13 @@ def test_align_weather_and_generation(sample_weather_df, sample_generation_df):
     assert len(aligned) == 5
 
 
+def test_align_weather_and_generation_leakage(sample_weather_df, sample_generation_df):
+    issue_time = pd.Timestamp("2023-01-01 02:00:00", tz="UTC")
+    aligned = align_weather_and_generation(sample_weather_df, sample_generation_df, issue_time=issue_time)
+    assert len(aligned) == 3
+    assert aligned.index.max() <= issue_time
+
+
 def test_create_time_features(sample_weather_df):
     df_feat = create_time_features(sample_weather_df)
     assert "hour" in df_feat.columns
