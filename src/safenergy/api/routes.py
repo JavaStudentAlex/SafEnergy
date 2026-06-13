@@ -10,9 +10,12 @@ from safenergy.api.schemas import (
     ForecastPrediction,
     ForecastRequest,
     ForecastResponse,
+    OrchestratorAPIResponse,
+    OrchestratorRequest,
     SignalRequest,
 )
 from safenergy.forecast.service import forecast_serving
+from safenergy.orchestrator.pipeline import run_end_to_end_pipeline
 from safenergy.signals.backtest import evaluate_signals
 from safenergy.signals.explanation import ExplanationResponse, generate_explanation
 from safenergy.signals.objects import TradingSignal
@@ -141,6 +144,33 @@ def explain_forecast(request: ExplanationRequest):
             upper_bound=request.upper_bound,
             features=request.features,
             market_price=request.market_price,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/orchestrator/run", response_model=OrchestratorAPIResponse, tags=["Orchestrator"])
+def run_orchestrator(request: OrchestratorRequest):
+    """
+    Run the full end-to-end forecasting and trading signal pipeline.
+    """
+    try:
+        response = run_end_to_end_pipeline(
+            asset_id=request.asset_id,
+            latitude=request.latitude,
+            longitude=request.longitude,
+            start_date=request.start_date,
+            end_date=request.end_date,
+            simulate_failure=request.simulate_failure,
+            strong_threshold=request.strong_threshold,
+            weak_threshold=request.weak_threshold,
+            curtailment_price_threshold=request.curtailment_price_threshold,
+            extreme_price_threshold=request.extreme_price_threshold,
+        )
+        return OrchestratorAPIResponse(
+            asset_id=response.asset_id,
+            issue_time=response.issue_time,
+            signals=response.signals,
+            explanations=response.explanations
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

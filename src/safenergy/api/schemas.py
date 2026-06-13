@@ -3,6 +3,8 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
+from safenergy.signals.explanation import ExplanationResponse
+from safenergy.signals.objects import TradingSignal
 from safenergy.signals.thresholds import SignalLevel
 
 
@@ -71,3 +73,23 @@ class ExplanationRequest(BaseModel):
     upper_bound: float
     features: Optional[Dict[str, float]] = None
     market_price: Optional[float] = None
+
+class OrchestratorRequest(BaseModel):
+    asset_id: str
+    latitude: float
+    longitude: float
+    start_date: datetime
+    end_date: datetime
+    simulate_failure: bool = False
+    strong_threshold: float = 100.0
+    weak_threshold: float = 20.0
+    curtailment_price_threshold: float = -10.0
+    extreme_price_threshold: float = 1000.0
+
+class OrchestratorAPIResponse(BaseModel):
+    asset_id: str
+    issue_time: datetime
+    signals: List[TradingSignal]
+    explanations: List[ExplanationResponse]
+
+    model_config = {"arbitrary_types_allowed": True}

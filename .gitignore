@@ -263,4 +263,4 @@ coverage/
 .cache/
 tmp/
 .cache.sqlite
-google-application-credentials-safenergy-earth-engine.json
+google-application-credentials-safenergy-earth-engine.jsondata/cache/
