@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-06-13T08:08:51Z | Files: 86 | Described: 0/86
-<!-- gsd:codebase-meta {"generatedAt":"2026-06-13T08:08:51Z","fingerprint":"cf06350eb994dd2cff5a6eb7a4f651536f73f282","fileCount":86,"truncated":false} -->
+Generated: 2026-06-13T09:10:55Z | Files: 90 | Described: 0/90
+<!-- gsd:codebase-meta {"generatedAt":"2026-06-13T09:10:55Z","fingerprint":"7af9d93f48cbba36eb1d1b1d208783ff39405843","fileCount":90,"truncated":false} -->
 
 ### (root)/
 - `.env.example`
@@ -90,6 +90,10 @@ Generated: 2026-06-13T08:08:51Z | Files: 86 | Described: 0/86
 - `src/safenergy/ingest/satellite.py`
 - `src/safenergy/ingest/weather.py`
 
+### src/safenergy/orchestrator/
+- `src/safenergy/orchestrator/__init__.py`
+- `src/safenergy/orchestrator/pipeline.py`
+
 ### src/safenergy/signals/
 - `src/safenergy/signals/__init__.py`
 - `src/safenergy/signals/backtest.py`
@@ -106,6 +110,7 @@ Generated: 2026-06-13T08:08:51Z | Files: 86 | Described: 0/86
 ### tests/
 - `tests/__init__.py`
 - `tests/conftest.py`
+- `tests/test_api_orchestrator.py`
 - `tests/test_api.py`
 - `tests/test_backtest.py`
 - `tests/test_baselines.py`
@@ -115,6 +120,7 @@ Generated: 2026-06-13T08:08:51Z | Files: 86 | Described: 0/86
 - `tests/test_features.py`
 - `tests/test_forecast_models.py`
 - `tests/test_forecast_service.py`
+- `tests/test_orchestrator.py`
 - `tests/test_signals_pipeline.py`
 - `tests/test_signals.py`
 - `tests/test_storage.py`
