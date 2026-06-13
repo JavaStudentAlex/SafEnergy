@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M001-7qeil2: Renewable Forecasting Trading Prototype
-**Active Slice:** S13: Dashboard and Backtest Views
+**Active Slice:** S14: Testing and Final Demo Polish
 **Phase:** building
 **Requirements Status:** 0 active · 0 validated · 0 deferred · 0 out of scope
 
@@ -9,6 +9,7 @@
 - 🔄 **M001-7qeil2:** Renewable Forecasting Trading Prototype
 
 ## Recent Decisions
+- Implemented Dashboard and Backtest Views using Streamlit for S13.
 - Implemented Explanation Service including human-readable summaries, confidence, and attribution for S12.
 - Implemented FastAPI Backend including REST endpoints for signals, backtesting, and forecasts for S11.
 - Implemented Storage Layer using DuckDB and Parquet for S10.
@@ -25,4 +26,4 @@
 - None
 
 ## Next Action
-Implement slice S13 (Dashboard and Backtest Views).
+Implement slice S14 (Testing and Final Demo Polish).
