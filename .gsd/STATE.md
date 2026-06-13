@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M007-19pj5r: Portfolio Health Dashboard Closure
-**Active Slice:** S01: Basic Portfolio Status UI
+**Active Slice:** S02: Dashboard Overview Aggregation
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -15,6 +15,7 @@
 - 🔄 **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S01 of M007-19pj5r: Implemented rule-based plant health API endpoint.
 - Completed S03 of M006-cgt3hd: Implemented /commitment/metrics endpoint and test_commitment_smoke.py end-to-end test.
 - Completed S02 of M006-cgt3hd: Implemented Accepted Action Ledger to store and retrieve recommended commitment actions.
 - Completed S01 of M006-cgt3hd: Implemented Recommendation Engine engine logic and API endpoint.

@@ -12,7 +12,7 @@
 
 ## Slices
 
-- [ ] **S01: Rule Based Plant Health** `risk:medium` `depends:[]`
+- [x] **S01: Rule Based Plant Health** `risk:medium` `depends:[]`
   > After this: After this, the frontend Plant Health Monitor can show meaningful demo statuses and anomalies for each plant.
 
 - [ ] **S02: Dashboard Overview Aggregation** `risk:high` `depends:[S01]`
