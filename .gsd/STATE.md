@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M002-7jq3dt: Live Data Forecast Serving Integration
-**Active Slice:** S06: Dashboard Backend Integration
+**Active Slice:** S07: Trading Backtest and Explanation Hardening
 **Phase:** execution
 **Requirements Status:** 1 active · 0 validated · 0 deferred · 0 out of scope
 
@@ -11,6 +11,7 @@
 - ⬜ **M003-4jb56n:** No Training Forecast Method Stack
 
 ## Recent Decisions
+- Completed S06 of M002-7jq3dt: Refactored the Streamlit dashboard to hit FastAPI endpoints instead of calling python functions directly, added Orchestrator tab.
 - Completed S05 of M002-7jq3dt: Created End to End Orchestrator which seamlessly runs data retrieval, feature building, inference, signals generation and explanations.
 - Completed S04 of M002-7jq3dt: Created forecast serving boundary supporting model inference and persistence fallback, connected it to API.
 - Completed S03 of M002-7jq3dt: Added provenance and geospatial metadata tracking in the duckdb storage client.
@@ -35,4 +36,4 @@
 - None
 
 ## Next Action
-Proceed to S06: Dashboard Backend Integration.
+Proceed to S07: Trading Backtest and Explanation Hardening.

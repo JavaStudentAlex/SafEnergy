@@ -1,9 +1,10 @@
+import datetime
+
+import httpx
 import pandas as pd
 import streamlit as st
 
-from safenergy.signals.backtest import evaluate_signals
-from safenergy.signals.explanation import generate_explanation
-from safenergy.signals.pipeline import generate_trading_signals
+API_URL = "http://localhost:8000"
 
 st.set_page_config(
     page_title="SafEnergy Dashboard",
@@ -14,13 +15,77 @@ st.set_page_config(
 st.title("SafEnergy Forecasting and Trading Dashboard")
 st.markdown("Visualize renewable forecasts, trading signals, and backtest results.")
 
-tab_forecasts, tab_signals, tab_backtest = st.tabs([
+tab_orchestrator, tab_forecasts, tab_signals, tab_backtest = st.tabs([
+    "Orchestrator",
     "Forecasts",
     "Trading Signals",
     "Backtest",
 ])
 
+
+with tab_orchestrator:
+    st.header("End-to-End Orchestrator")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Pipeline Configuration")
+        asset_id = st.text_input("Asset ID", value="TEST-ASSET")
+        lat = st.number_input("Latitude", value=30.2672)
+        lon = st.number_input("Longitude", value=-97.7431)
+        start_d = st.date_input("Start Date", value=datetime.date(2023,1,1))
+        end_d = st.date_input("End Date", value=datetime.date(2023,1,2))
+        sim_fail = st.checkbox("Simulate Failure")
+
+        st.subheader("Thresholds")
+        strong_threshold_orch = st.number_input("Strong Threshold (MW)", value=100.0, key="orch_strong")
+        weak_threshold_orch = st.number_input("Weak Threshold (MW)", value=20.0, key="orch_weak")
+        curtailment_price_orch = st.number_input("Curtailment Price Threshold ($)", value=-10.0, key="orch_curtail")
+        extreme_price_orch = st.number_input("Extreme Price Threshold ($)", value=1000.0, key="orch_extreme")
+
+        if st.button("Run Pipeline"):
+            payload = {
+                "asset_id": asset_id,
+                "latitude": lat,
+                "longitude": lon,
+                "start_date": start_d.isoformat() + "T00:00:00Z",
+                "end_date": end_d.isoformat() + "T00:00:00Z",
+                "simulate_failure": sim_fail,
+                "strong_threshold": strong_threshold_orch,
+                "weak_threshold": weak_threshold_orch,
+                "curtailment_price_threshold": curtailment_price_orch,
+                "extreme_price_threshold": extreme_price_orch
+            }
+            try:
+                response = httpx.post(f"{API_URL}/orchestrator/run", json=payload, timeout=60.0)
+                if response.status_code == 200:
+                    data = response.json()
+                    with col2:
+                        st.subheader("Pipeline Results")
+                        st.write(f"**Asset ID:** {data['asset_id']}")
+                        st.write(f"**Issue Time:** {data['issue_time']}")
+                        st.info(f"**Forecast Data State:** {data.get('forecast_data_state', 'unknown')}")
+
+                        st.write("**Signals**")
+                        if data["signals"]:
+                            st.dataframe(pd.DataFrame(data["signals"]))
+                        else:
+                            st.info("No signals generated.")
+
+                        st.write("**Explanations**")
+                        if data["explanations"]:
+                            for i, exp in enumerate(data["explanations"][:5]):
+                                with st.expander(f"Explanation {i+1}"):
+                                    st.json(exp)
+                            if len(data["explanations"]) > 5:
+                                st.write(f"... and {len(data['explanations']) - 5} more.")
+                        else:
+                            st.info("No explanations generated.")
+                else:
+                    st.error(f"API Error {response.status_code}: {response.text}")
+            except Exception as e:
+                st.error(f"Request failed: {e}")
+
 with tab_forecasts:
+
     st.header("Forecasts & Explanations")
     col1, col2 = st.columns(2)
     with col1:
@@ -34,25 +99,32 @@ with tab_forecasts:
         wind_speed = st.number_input("Wind Speed Driver", value=5.0, key="fc_wind")
 
         if st.button("Generate Explanation", key="btn_explain"):
-            explanation = generate_explanation(
-                forecast_delta=delta,
-                baseline=baseline,
-                lower_bound=lower,
-                upper_bound=upper,
-                features={"cloud_cover": cloud_cover, "wind_speed": wind_speed},
-                market_price=price,
-            )
+            payload = {
+                "forecast_delta": delta,
+                "baseline": baseline,
+                "lower_bound": lower,
+                "upper_bound": upper,
+                "features": {"cloud_cover": cloud_cover, "wind_speed": wind_speed},
+                "market_price": price
+            }
+            try:
+                response = httpx.post(f"{API_URL}/trading/explain", json=payload)
+                if response.status_code == 200:
+                    explanation = response.json()
+                    with col2:
+                        st.subheader("Explanation Output")
+                        st.info(explanation["summary"])
+                        st.metric("Confidence", explanation["confidence"])
+                        st.metric("Uncertainty (MW)", f"{explanation['uncertainty_mw']:.1f}")
+                        st.write("**Top Drivers:**", ", ".join(explanation["top_drivers"]))
 
-            with col2:
-                st.subheader("Explanation Output")
-                st.info(explanation.summary)
-                st.metric("Confidence", explanation.confidence)
-                st.metric("Uncertainty (MW)", f"{explanation.uncertainty_mw:.1f}")
-                st.write("**Top Drivers:**", ", ".join(explanation.top_drivers))
-
-                st.write("**Attribution:**")
-                for attr in explanation.attribution:
-                    st.write(f"- {attr.feature_name}: {attr.contribution_mw:.1f} MW ({attr.description})")
+                        st.write("**Attribution:**")
+                        for attr in explanation["attribution"]:
+                            st.write(f"- {attr['feature_name']}: {attr['contribution_mw']:.1f} MW ({attr['description']})")
+                else:
+                    st.error(f"API Error {response.status_code}: {response.text}")
+            except Exception as e:
+                st.error(f"Request failed: {e}")
 
 with tab_signals:
     st.header("Trading Signals")
@@ -81,33 +153,43 @@ with tab_signals:
                 baselines.index = index
                 prices.index = index
 
-                signals = generate_trading_signals(
-                    asset_id="mock-asset",
-                    deltas=deltas,
-                    baselines=baselines,
-                    prices=prices,
-                    strong_threshold=strong_threshold,
-                    weak_threshold=weak_threshold,
-                    curtailment_price_threshold=curtailment_price,
-                    extreme_price_threshold=extreme_price,
-                )
+                data_list = [
+                    {"timestamp": ts.isoformat() + "Z" if str(ts.tzinfo) == "UTC" else ts.isoformat(),
+                     "delta": float(d),
+                     "baseline": float(b),
+                     "price": float(p)}
+                    for ts, d, b, p in zip(index, deltas, baselines, prices)
+                ]
+                payload = {
+                    "asset_id": "mock-asset",
+                    "data": data_list,
+                    "strong_threshold": strong_threshold,
+                    "weak_threshold": weak_threshold,
+                    "curtailment_price_threshold": curtailment_price,
+                    "extreme_price_threshold": extreme_price
+                }
 
-                with col2:
-                    st.subheader("Generated Signals")
-                    if not signals:
-                        st.warning("No signals generated.")
-                    else:
-                        signal_data = []
-                        for sig in signals:
-                            signal_data.append({
-                                "Timestamp": sig.timestamp,
-                                "Delta": sig.forecast_delta,
-                                "Price": sig.market_price,
-                                "Base Signal": sig.base_signal.name,
-                                "Adjusted Signal": sig.adjusted_signal.name,
-                                "Explanation": sig.explanation
-                            })
-                        st.dataframe(pd.DataFrame(signal_data))
+                response = httpx.post(f"{API_URL}/trading/signals", json=payload)
+                if response.status_code == 200:
+                    signals = response.json()
+                    with col2:
+                        st.subheader("Generated Signals")
+                        if not signals:
+                            st.warning("No signals generated.")
+                        else:
+                            signal_data = []
+                            for sig in signals:
+                                signal_data.append({
+                                    "Timestamp": sig["timestamp"],
+                                    "Delta": sig["forecast_delta"],
+                                    "Price": sig["market_price"],
+                                    "Base Signal": str(sig["base_signal"]),
+                                    "Adjusted Signal": str(sig["adjusted_signal"]),
+                                    "Explanation": sig["explanation"]
+                                })
+                            st.dataframe(pd.DataFrame(signal_data))
+                else:
+                    st.error(f"API Error {response.status_code}: {response.text}")
             except Exception as e:
                 st.error(f"Error generating signals: {e}")
 
@@ -129,18 +211,29 @@ with tab_backtest:
                 sig_vals.index = index
                 price_changes.index = index
 
-                results = evaluate_signals(signals=sig_vals, price_changes=price_changes)
+                data_list = [
+                    {"timestamp": ts.isoformat() + "Z" if str(ts.tzinfo) == "UTC" else ts.isoformat(),
+                     "signal": int(s),
+                     "price_change": float(p)}
+                    for ts, s, p in zip(index, sig_vals, price_changes)
+                ]
+                payload = {"data": data_list}
 
-                with col2:
-                    st.subheader("Backtest Metrics")
-                    st.metric("Total Return ($)", f"{results['total_return']:.2f}")
-                    st.metric("Hit Rate", f"{results['hit_rate'] * 100:.1f}%")
+                response = httpx.post(f"{API_URL}/trading/backtest", json=payload)
+                if response.status_code == 200:
+                    results = response.json()
+                    with col2:
+                        st.subheader("Backtest Metrics")
+                        st.metric("Total Return ($)", f"{results['total_return']:.2f}")
+                        st.metric("Hit Rate", f"{results['hit_rate'] * 100:.1f}%")
 
-                    st.write("**Details:**")
-                    st.write(f"- Hits: {results['hits']}")
-                    st.write(f"- Misses: {results['misses']}")
-                    st.write(f"- Flat Trades: {results['flat']}")
-                    st.write(f"- Total Active Trades: {results['total_trades']}")
+                        st.write("**Details:**")
+                        st.write(f"- Hits: {results['hits']}")
+                        st.write(f"- Misses: {results['misses']}")
+                        st.write(f"- Flat Trades: {results['flat']}")
+                        st.write(f"- Total Active Trades: {results['total_trades']}")
+                else:
+                    st.error(f"API Error {response.status_code}: {response.text}")
 
             except Exception as e:
                 st.error(f"Error evaluating backtest: {e}")

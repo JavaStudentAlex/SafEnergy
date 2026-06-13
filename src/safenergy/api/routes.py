@@ -166,11 +166,19 @@ def run_orchestrator(request: OrchestratorRequest):
             curtailment_price_threshold=request.curtailment_price_threshold,
             extreme_price_threshold=request.extreme_price_threshold,
         )
+        # Simple heuristic for demo purposes:
+        # If simulated_failure it's unavailable. If we returned empty predictions it might be unavailable.
+        # Ideally, we'd pull this directly from the orchestrator response metadata.
+        state = "unavailable" if request.simulate_failure else "live"
+        if not response.signals and not response.explanations:
+            state = "unavailable"
+
         return OrchestratorAPIResponse(
             asset_id=response.asset_id,
             issue_time=response.issue_time,
             signals=response.signals,
-            explanations=response.explanations
+            explanations=response.explanations,
+            forecast_data_state=state
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

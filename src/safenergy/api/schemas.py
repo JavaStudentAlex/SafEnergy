@@ -91,5 +91,6 @@ class OrchestratorAPIResponse(BaseModel):
     issue_time: datetime
     signals: List[TradingSignal]
     explanations: List[ExplanationResponse]
+    forecast_data_state: str = "live"
 
     model_config = {"arbitrary_types_allowed": True}
