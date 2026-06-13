@@ -104,3 +104,28 @@ def test_trading_backtest():
     assert data["misses"] == 1
     assert data["flat"] == 0
     assert data["total_trades"] == 2
+
+
+def test_explain_forecast():
+    payload = {
+        "forecast_delta": 25.0,
+        "baseline": 100.0,
+        "lower_bound": 110.0,
+        "upper_bound": 140.0,
+        "features": {
+            "cloud_cover": -15.0,
+            "wind_speed": 5.0
+        },
+        "market_price": -5.0
+    }
+    response = client.post("/trading/explain", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "summary" in data
+    assert "25.0 MW higher" in data["summary"]
+    assert data["confidence"] in ["High", "Medium", "Low"]
+    assert data["uncertainty_mw"] == 30.0
+    assert "cloud_cover" in data["top_drivers"]
+    assert "wind_speed" in data["top_drivers"]
+    assert len(data["attribution"]) == 2
+    assert "negative" in data["summary"]

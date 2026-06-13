@@ -4,12 +4,14 @@ from fastapi import APIRouter, HTTPException
 from safenergy.api.schemas import (
     BacktestRequest,
     BacktestResponse,
+    ExplanationRequest,
     ForecastPrediction,
     ForecastRequest,
     ForecastResponse,
     SignalRequest,
 )
 from safenergy.signals.backtest import evaluate_signals
+from safenergy.signals.explanation import ExplanationResponse, generate_explanation
 from safenergy.signals.objects import TradingSignal
 from safenergy.signals.pipeline import generate_trading_signals
 
@@ -105,3 +107,21 @@ def predict_forecast(request: ForecastRequest):
         asset_id=request.asset_id,
         predictions=predictions
     )
+
+
+@router.post("/trading/explain", response_model=ExplanationResponse, tags=["Trading"])
+def explain_forecast(request: ExplanationRequest):
+    """
+    Generate an explainable summary and attribution for a given forecast.
+    """
+    try:
+        return generate_explanation(
+            forecast_delta=request.forecast_delta,
+            baseline=request.baseline,
+            lower_bound=request.lower_bound,
+            upper_bound=request.upper_bound,
+            features=request.features,
+            market_price=request.market_price,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
