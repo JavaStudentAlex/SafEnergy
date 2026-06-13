@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M003-4jb56n: No Training Forecast Method Stack
-**Active Slice:** S03
+**Active Slice:** S04
 **Phase:** implementing
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -15,6 +15,7 @@
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S03 of M003-4jb56n: Implemented Wind Power-Curve Approximation and Regional Capacity Fallback methods for no-training forecast stack.
 - Completed S02 of M003-4jb56n: Implemented Solar and Persistence Methods including smart persistence baseline and pvlib physical baseline.
 - Completed S01 of M003-4jb56n: Defined the Forecast Method Contract in docs/forecast_contract.md.
 - Completed S08 of M002-7jq3dt: Handled raw exception leakages across API routes and the global exception handler, added the root documentation (README.md).

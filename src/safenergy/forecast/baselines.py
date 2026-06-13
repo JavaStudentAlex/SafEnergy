@@ -211,3 +211,75 @@ def pvlib_physical_baseline(
     ac = ac.clip(lower=0.0)
 
     return ac
+
+
+def wind_power_curve_baseline(
+    df: pd.DataFrame,
+    wind_speed_col: str,
+    capacity_mw: float,
+    cut_in_speed: float = 3.0,
+    rated_speed: float = 12.0,
+    cut_out_speed: float = 25.0
+) -> pd.Series:
+    """
+    Creates a wind baseline forecast using a simple power curve approximation.
+
+    Args:
+        df: Input DataFrame containing the wind speed column.
+        wind_speed_col: Name of the wind speed column (m/s).
+        capacity_mw: Installed wind capacity in MW.
+        cut_in_speed: Wind speed at which generation starts.
+        rated_speed: Wind speed at which generation reaches full capacity.
+        cut_out_speed: Wind speed at which turbines shut down for safety.
+
+    Returns:
+        A pandas Series containing the wind baseline forecast in MW.
+    """
+    if df.empty or wind_speed_col not in df.columns:
+        return pd.Series(index=df.index, dtype=float)
+
+    ws = df[wind_speed_col]
+
+    # Initialize with zeros
+    power = pd.Series(0.0, index=df.index, dtype=float)
+
+    # Regime 1: Below cut-in or above cut-out (0 MW)
+    # Already 0.0
+
+    # Regime 2: Between cut-in and rated speed (cubic approximation)
+    # power = capacity * ((ws - cut_in) / (rated - cut_in))^3
+    mask_curve = (ws >= cut_in_speed) & (ws < rated_speed)
+    if mask_curve.any():
+        norm_ws = (ws[mask_curve] - cut_in_speed) / (rated_speed - cut_in_speed)
+        power[mask_curve] = capacity_mw * (norm_ws ** 3)
+
+    # Regime 3: Between rated and cut-out speed (Full capacity)
+    mask_rated = (ws >= rated_speed) & (ws <= cut_out_speed)
+    if mask_rated.any():
+        power[mask_rated] = capacity_mw
+
+    return power
+
+
+def regional_capacity_fallback(
+    df: pd.DataFrame,
+    capacity_mw: float,
+    base_capacity_factor: float = 0.2
+) -> pd.Series:
+    """
+    Creates a low-confidence regional fallback forecast using installed capacity
+    and a static or simple estimated capacity factor.
+
+    Args:
+        df: Input DataFrame to provide index.
+        capacity_mw: Total regional installed capacity in MW.
+        base_capacity_factor: Estimated average capacity factor (e.g. 0.2 for solar, 0.3 for wind).
+
+    Returns:
+        A pandas Series containing the regional fallback forecast in MW.
+    """
+    if len(df) == 0:
+        return pd.Series(index=df.index, dtype=float)
+
+    # Return a flat estimation
+    return pd.Series([capacity_mw * base_capacity_factor] * len(df), index=df.index, dtype=float)
