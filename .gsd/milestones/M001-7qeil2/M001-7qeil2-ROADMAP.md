@@ -48,7 +48,7 @@
 - [x] **S11: FastAPI Backend** `[sketch]` `risk:medium` `depends:[S06,S09,S10]`
   > After this: FastAPI endpoints expose forecast, trading signal, and backtest functionality with explicit error handling.
 
-- [ ] **S12: Explanation Service** `[sketch]` `risk:medium` `depends:[S06,S09]`
+- [x] **S12: Explanation Service** `[sketch]` `risk:medium` `depends:[S06,S09]`
   > After this: Forecast and trading explanations describe drivers, confidence, uncertainty, and attribution.
 
 - [ ] **S13: Dashboard and Backtest Views** `[sketch]` `risk:medium` `depends:[S07,S09,S11,S12]`

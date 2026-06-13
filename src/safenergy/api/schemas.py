@@ -62,3 +62,12 @@ class BacktestResponse(BaseModel):
     misses: int
     flat: int
     total_trades: int
+
+
+class ExplanationRequest(BaseModel):
+    forecast_delta: float
+    baseline: float
+    lower_bound: float
+    upper_bound: float
+    features: Optional[Dict[str, float]] = None
+    market_price: Optional[float] = None
