@@ -18,7 +18,7 @@
 - [x] **S02: Accepted Action Ledger** `risk:medium` `depends:[S01]`
   > After this: After this, the frontend can accept a recommendation and list accepted actions for a plant.
 
-- [ ] **S03: Metrics and Commitment Smoke** `risk:medium` `depends:[S01,S02]`
+- [x] **S03: Metrics and Commitment Smoke** `risk:medium` `depends:[S01,S02]`
   > After this: After this, accepting an action updates the metrics the frontend shows to operators.
 
 ## Boundary Map
