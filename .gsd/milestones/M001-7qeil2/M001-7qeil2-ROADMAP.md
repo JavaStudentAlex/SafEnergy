@@ -27,7 +27,7 @@
 - [x] **S04: Time Alignment and Feature Engineering** `[sketch]` `risk:high` `depends:[S03]`
   > After this: Aligned feature tables exist with solar, weather, generation history, target variables, and leakage-safe splits.
 
-- [ ] **S05: Forecast Baselines** `[sketch]` `risk:medium` `depends:[S04]`
+- [x] **S05: Forecast Baselines** `[sketch]` `risk:medium` `depends:[S04]`
   > After this: Persistence, same-hour-yesterday, and weather-only baseline outputs are available for comparison.
 
 - [ ] **S06: Forecasting Model Service** `[sketch]` `risk:high` `depends:[S04,S05]`
