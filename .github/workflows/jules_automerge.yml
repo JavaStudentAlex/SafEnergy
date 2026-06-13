@@ -5,42 +5,74 @@ on:
     branches: [main]
 
 permissions:
+  checks: read
   contents: write
   pull-requests: write
 
+concurrency:
+  group: automerge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
-  test-and-merge:
+  wait-and-merge:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
-          enable-cache: true
-
-      - name: Set up Python
-        run: uv python install 3.12
-
-      - name: Install dependencies
-        run: uv sync --group dev
-
-      - name: Run Linters (Ruff)
-        run: uv run ruff check .
-
-      - name: Run Tests
+      - name: Wait for lint and tests
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          if [ -d "tests" ]; then
-            uv run pytest tests -q
-          else
-            echo "No tests directory found, skipping pytest."
-          fi
+          set -euo pipefail
+
+          required_checks=("Lint" "Tests")
+
+          for attempt in {1..90}; do
+            pending=0
+
+            for check_name in "${required_checks[@]}"; do
+              check="$(
+                gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/check-runs" \
+                  --jq ".check_runs | map(select(.name == \"${check_name}\")) | sort_by(.started_at // .created_at) | last // empty | [.status, (.conclusion // \"\")] | @tsv"
+              )"
+
+              if [ -z "$check" ]; then
+                echo "Waiting for check to appear: ${check_name}"
+                pending=1
+                continue
+              fi
+
+              IFS=$'\t' read -r status conclusion <<< "$check"
+
+              if [ "$status" != "completed" ]; then
+                echo "Waiting for ${check_name}: ${status}"
+                pending=1
+                continue
+              fi
+
+              case "$conclusion" in
+                success|neutral|skipped)
+                  echo "${check_name}: ${conclusion}"
+                  ;;
+                *)
+                  echo "${check_name} finished with conclusion: ${conclusion}"
+                  exit 1
+                  ;;
+              esac
+            done
+
+            if [ "$pending" -eq 0 ]; then
+              exit 0
+            fi
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for lint and tests to pass."
+          exit 1
 
       - name: Merge PR
-        if: success()
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
           gh pr merge ${{ github.event.pull_request.number }} --merge --delete-branch

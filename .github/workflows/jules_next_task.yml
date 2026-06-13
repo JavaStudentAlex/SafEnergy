@@ -4,19 +4,11 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
-  push:
-    branches: [main]
-  workflow_dispatch:
 
 jobs:
   next-task:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
-      (github.event.pull_request.merged == true &&
-       (github.event.pull_request.user.login == 'google-jules[bot]' ||
-        contains(github.event.pull_request.labels.*.name, 'jules')))
+    if: github.event.pull_request.merged == true
 
     steps:
       - name: Trigger Google Jules via Official API
