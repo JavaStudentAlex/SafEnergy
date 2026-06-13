@@ -30,7 +30,7 @@
 - [x] **S05: Forecast Baselines** `[sketch]` `risk:medium` `depends:[S04]`
   > After this: Persistence, same-hour-yesterday, and weather-only baseline outputs are available for comparison.
 
-- [ ] **S06: Forecasting Model Service** `[sketch]` `risk:high` `depends:[S04,S05]`
+- [x] **S06: Forecasting Model Service** `[sketch]` `risk:high` `depends:[S04,S05]`
   > After this: First ML models produce solar and wind generation-change forecasts with uncertainty and serialized artifacts if needed.
 
 - [ ] **S07: Forecast Evaluation** `[sketch]` `risk:high` `depends:[S05,S06]`
