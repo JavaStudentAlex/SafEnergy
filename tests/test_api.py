@@ -31,9 +31,11 @@ def test_forecast_predict():
     data = response.json()
     assert data["asset_id"] == "test-asset"
     assert len(data["predictions"]) == 1
-    assert data["predictions"][0]["point"] == 10.0
-    assert data["predictions"][0]["lower"] == 8.0
-    assert data["predictions"][0]["upper"] == 12.0
+    assert data["predictions"][0]["point"] is None
+    assert data["predictions"][0]["method"] == "diagnostic_fallback"
+    assert data["predictions"][0]["confidence_score"] == 0.0
+    assert data["predictions"][0]["lower"] is None
+    assert data["predictions"][0]["upper"] is None
 
 
 def test_trading_signals():

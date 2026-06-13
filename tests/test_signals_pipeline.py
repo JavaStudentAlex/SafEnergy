@@ -67,3 +67,30 @@ def test_generate_trading_signals_empty():
     )
 
     assert len(signals) == 0
+
+
+def test_generate_trading_signals_low_confidence():
+    """Test behavior when forecast confidence is low."""
+    idx = pd.date_range("2024-01-01 00:00:00", periods=1, freq="h", tz="UTC")
+
+    deltas = pd.Series([150.0], index=idx)
+    baselines = pd.Series([1000.0], index=idx)
+    prices = pd.Series([30.0], index=idx)
+    confidences = pd.Series([0.2], index=idx)  # Low confidence
+
+    signals = generate_trading_signals(
+        asset_id="TEST",
+        deltas=deltas,
+        baselines=baselines,
+        prices=prices,
+        confidence_scores=confidences,
+        strong_threshold=100.0,
+        weak_threshold=20.0,
+        curtailment_price_threshold=-10.0,
+        extreme_price_threshold=1000.0
+    )
+
+    assert len(signals) == 1
+    # Despite strong delta, should be downgraded to neutral due to low confidence
+    assert signals[0].adjusted_signal == SignalLevel.NEUTRAL
+    assert "low forecast confidence" in signals[0].explanation.lower()

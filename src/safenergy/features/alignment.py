@@ -48,7 +48,15 @@ def align_weather_and_generation(
     # We use asfreq to ensure the index is strict 1h
     # In a real app we might want to interpolate or just drop NA, depending on the business logic.
     weather_resampled = weather_df.resample("1h").mean()
-    generation_resampled = generation_df.resample("1h").mean()
+
+    numeric_cols = generation_df.select_dtypes(include="number").columns
+    generation_resampled = generation_df[numeric_cols].resample("1h").mean()
+
+    non_numeric_cols = generation_df.select_dtypes(exclude="number").columns
+    if len(non_numeric_cols) > 0:
+        non_numeric_resampled = generation_df[non_numeric_cols].resample("1h").last()
+        generation_resampled = generation_resampled.join(non_numeric_resampled)
+
 
     # We use an inner join since we need both weather and generation for supervised learning.
     # We can also do an outer join and fillna.
@@ -82,7 +90,15 @@ def align_generation_and_prices(generation_df: pd.DataFrame | GenerationDataResp
 
     # Resample prices from 15min to 1h
     prices_resampled = prices_df.resample("1h").mean()
-    generation_resampled = generation_df.resample("1h").mean()
+
+    numeric_cols = generation_df.select_dtypes(include="number").columns
+    generation_resampled = generation_df[numeric_cols].resample("1h").mean()
+
+    non_numeric_cols = generation_df.select_dtypes(exclude="number").columns
+    if len(non_numeric_cols) > 0:
+        non_numeric_resampled = generation_df[non_numeric_cols].resample("1h").last()
+        generation_resampled = generation_resampled.join(non_numeric_resampled)
+
 
     aligned_df = generation_resampled.join(prices_resampled, how="outer")
     return aligned_df

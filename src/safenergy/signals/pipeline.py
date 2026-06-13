@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -12,6 +12,7 @@ def generate_trading_signals(
     deltas: pd.Series,
     baselines: pd.Series,
     prices: pd.Series,
+    confidence_scores: Optional[pd.Series] = None,
     strong_threshold: float = 100.0,
     weak_threshold: float = 20.0,
     curtailment_price_threshold: float = -10.0,
@@ -34,11 +35,15 @@ def generate_trading_signals(
         List of TradingSignal objects.
     """
     # Ensure all series have the same timezone-aware datetime index
-    df = pd.DataFrame({
+    df_dict = {
         "delta": deltas,
         "baseline": baselines,
         "price": prices
-    }).dropna()
+    }
+    if confidence_scores is not None:
+        df_dict["confidence"] = confidence_scores
+
+    df = pd.DataFrame(df_dict).dropna()
 
     if df.empty:
         return []
@@ -85,6 +90,11 @@ def generate_trading_signals(
                 )
             else:
                 explanation = f"Market context adjusted signal from {base_sig.name} to {adj_sig.name}."
+
+        # Apply confidence downgrade
+        if "confidence" in row and row["confidence"] < 0.5:
+            adj_sig = SignalLevel.NEUTRAL
+            explanation = f"Downgraded signal to NEUTRAL due to low forecast confidence ({row['confidence']:.2f})."
 
         signal = TradingSignal(
             timestamp=timestamp,  # type: ignore
