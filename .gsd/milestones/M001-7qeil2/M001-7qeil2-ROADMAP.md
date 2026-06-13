@@ -21,7 +21,7 @@
 - [x] **S02: Repository Structure and Configuration** `[sketch]` `risk:medium` `depends:[S01]`
   > After this: A clean package layout and typed configuration surface exists for the prototype.
 
-- [ ] **S03: Data Ingestion and Quality Checks** `[sketch]` `risk:high` `depends:[S01,S02]`
+- [x] **S03: Data Ingestion and Quality Checks** `[sketch]` `risk:high` `depends:[S01,S02]`
   > After this: Satellite, weather, generation, and price ingestion adapters expose normalized, provenance-aware data or fixture-backed fallbacks.
 
 - [ ] **S04: Time Alignment and Feature Engineering** `[sketch]` `risk:high` `depends:[S03]`

@@ -71,6 +71,9 @@ jobs:
           echo "Timed out waiting for lint and tests to pass."
           exit 1
 
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Merge PR
         env:
           GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
