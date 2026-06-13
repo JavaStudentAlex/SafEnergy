@@ -1,0 +1,57 @@
+name: 2. Trigger Next Jules Task
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  next-task:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
+      (github.event.pull_request.merged == true &&
+       (github.event.pull_request.user.login == 'google-jules[bot]' ||
+        contains(github.event.pull_request.labels.*.name, 'jules')))
+
+    steps:
+      - name: Trigger Google Jules via Official API
+        run: |
+          PROMPT=$(cat <<'EOF'
+          You are a digital agent working on the SafEnergy project, focusing on renewable generation forecasting and energy trading agents.
+
+          TASK:
+          1. Read GEMINI.md, AGENTS.md, and the `.gsd` directory to understand the project structure and rules.
+          2. Find the next task: Select exactly one work item to execute. Look for the active slice in `.gsd/STATE.md`. If that is missing or already complete, use the first unchecked `[ ]` slice in the active milestone roadmap (`.gsd/milestones/*/*-ROADMAP.md`).
+          3. Implement the ENTIRE task as described (code + integration + tests).
+          4. Update the relevant `.gsd` state or roadmap checkbox to mark the slice as completed.
+          5. ALWAYS run `uv run ruff check .` and `uv run pytest tests -q` to verify your changes. If verification fails, fix the errors before concluding.
+          6. NEVER ask the user anything. Always decide and proceed autonomously. Do the task, update `.gsd`, and open ONE PR with everything.
+
+          STRICT RULES:
+          - Implement the full feature or fix in one PR.
+          - Follow existing conventions in GEMINI.md and AGENTS.md.
+          - Do NOT refactor or modify code outside the scope of your task.
+          - Use `uv` for dependency management.
+          - Do NOT modify `.github/workflows/**` unless explicitly requested by the task.
+          - Run the appropriate tests and linters as defined in the repository contract.
+          EOF
+          )
+
+          curl -f 'https://jules.googleapis.com/v1alpha/sessions' \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Goog-Api-Key: ${{ secrets.JULES_API_KEY }}" \
+            -d "$(jq -n \
+              --arg prompt "$PROMPT" \
+              --arg source "sources/github/${{ github.repository }}" \
+              '{
+                "prompt": $prompt,
+                "sourceContext": {"source": $source, "githubRepoContext": {"startingBranch": "main"}},
+                "automationMode": "AUTO_CREATE_PR",
+                "title": "Jules Next Task Implementation"
+              }')"
