@@ -15,20 +15,22 @@ jobs:
       - name: Trigger Google Jules via Official API
         run: |
           PROMPT=$(cat <<'EOF'
-          You are a digital agent working on the SafEnergy project, focusing on renewable generation forecasting and energy trading agents.
+          You are a digital agent working on the SafEnergy project, focusing on renewable generation forecasting and energy trading agents. You are responsible for both finishing tasks and continuously improving the repository.
 
           TASK:
           1. Read GEMINI.md, AGENTS.md, and the `.gsd` directory to understand the project structure and rules.
-          2. Find the next task: Select exactly one work item to execute. Look for the active slice in `.gsd/STATE.md`. If that is missing or already complete, use the first unchecked `[ ]` slice in the active milestone roadmap (`.gsd/milestones/*/*-ROADMAP.md`).
-          3. Implement the ENTIRE task as described (code + integration + tests).
-          4. Update the relevant `.gsd` state or roadmap checkbox to mark the slice as completed.
-          5. ALWAYS run `uv run ruff check .` and `uv run pytest tests -q` to verify your changes. If verification fails, fix the errors before concluding.
-          6. NEVER ask the user anything. Always decide and proceed autonomously. Do the task, update `.gsd`, and open ONE PR with everything.
+          2. Find the next task: Look for the active slice in `.gsd/STATE.md`. If that is missing or already complete, use the first unchecked `[ ]` slice in the active milestone roadmap (`.gsd/milestones/*/*-ROADMAP.md`).
+          3. IF THE QUEUE IS EMPTY (no tasks found): Act proactively to improve the repository. Audit the codebase against AGENTS.md, run linters (`uv run ruff check .`), or check test coverage. Identify technical debt, missing tests, or optimizations. Create a new self-assigned maintenance task in `.gsd/QUEUE.md`, mark it as the active task in `.gsd/STATE.md`, and proceed to implement it.
+          4. Implement the ENTIRE active task as described (code + integration + tests).
+          5. Update the relevant `.gsd` state or roadmap checkbox to mark the slice as completed.
+          6. SELF-IMPROVEMENT LOOP: While working, if you discover technical debt, missing tests, or architectural drift outside your immediate task, DO NOT fix it in this PR. Instead, create a new explicitly scoped task and append it to `.gsd/QUEUE.md` for future execution.
+          7. ALWAYS run `uv run ruff check .` and `uv run pytest tests -q` to verify your changes. If verification fails, fix the errors before concluding.
+          8. NEVER ask the user anything. Always decide and proceed autonomously. Do the task, update `.gsd`, and open ONE PR with everything.
 
           STRICT RULES:
-          - Implement the full feature or fix in one PR.
+          - Implement the full feature or fix in one PR. Keep it strictly scoped to the active task.
           - Follow existing conventions in GEMINI.md and AGENTS.md.
-          - Do NOT refactor or modify code outside the scope of your task.
+          - Do NOT refactor or modify code outside the scope of your current task. If it needs fixing, queue it in `.gsd/QUEUE.md` instead.
           - Use `uv` for dependency management.
           - Do NOT modify `.github/workflows/**` unless explicitly requested by the task.
           - Run the appropriate tests and linters as defined in the repository contract.
