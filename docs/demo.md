@@ -3,6 +3,15 @@
 This guide explains how to run the SafEnergy forecasting and trading prototype demo end-to-end.
 The prototype demonstrates the prediction of short-term changes in renewable generation and the translation of those forecasts into trading-relevant signals.
 
+## Demo Scope and Transparency Guardrails
+
+To maintain an honest product story, this prototype uses the following terminology and boundaries:
+- **Forecasts**: Uses a **physics-informed PV forecast** and a **weather-driven nowcast**.
+- **Market Data**: Uses **fixture-backed market prices** for evaluations.
+- **Signals**: Uses a **simulated spread** to evaluate the forecast delta.
+- **Actions**: Uses a **rule-based recommendation engine** for commitment decisions.
+- **Deferred Work**: **Satellite-derived cloud or irradiance features are captured as deferred follow-up work** and do not block completion of the core frontend alignment.
+
 ## Prerequisites
 
 Make sure you have `uv` installed, as it is the dependency manager for this project.
@@ -44,11 +53,13 @@ The dashboard will open in your default browser, typically at `http://localhost:
 
 ## Using the Demo
 
-The dashboard contains three main tabs:
+The dashboard contains five main tabs:
 
-1.  **Forecasts**: Simulates a forecast input and uses the API to generate a human-readable explanation with confidence, uncertainty, and feature attribution.
-2.  **Trading Signals**: Allows you to input mock time series data for forecast deltas, baselines, and market prices to generate categorical trading signals adjusted by market context.
-3.  **Backtest**: Evaluates a mock trading strategy by passing historical signals and price changes to calculate total return and hit rate.
+1.  **Portfolio Overview**: Aggregates plant health, market exposure, and rule-based commitment actions.
+2.  **Orchestrator**: Runs the end-to-end data retrieval, forecast serving, signal generation, and explanation loop.
+3.  **Forecasts**: Simulates a forecast input and uses the API to generate a human-readable explanation with confidence, uncertainty, and feature attribution.
+4.  **Trading Signals**: Allows you to input mock time series data for forecast deltas, baselines, and market prices to generate categorical trading signals adjusted by market context.
+5.  **Backtest**: Evaluates a mock trading strategy by passing historical signals and price changes to calculate total return and hit rate.
 
 ## Smoke Testing
 

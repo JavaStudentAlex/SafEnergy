@@ -44,6 +44,10 @@ with tab_portfolio:
                     st.metric("Estimated Cost (EUR)", f"{metrics.get('total_estimated_cost_eur', 0):.1f}")
                 with col3:
                     st.metric("Avoided Imbalance Cost (EUR)", f"{metrics.get('total_avoided_cost_eur', 0):.1f}")
+                demo_metadata = data.get("demo_metadata", {})
+                if demo_metadata:
+                    st.subheader("Demo Scope & Transparency")
+                    st.json(demo_metadata)
 
                 st.subheader("Market Prices")
                 if market and market.get("points"):

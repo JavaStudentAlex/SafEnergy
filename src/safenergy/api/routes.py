@@ -677,5 +677,12 @@ def get_dashboard_overview():
         portfolio_metrics=metrics,
         market_prices=market_prices,
         recent_actions=actions,
-        plants=plant_overviews
+        plants=plant_overviews,
+        demo_metadata={
+            "forecasts": "physics-informed PV forecast / weather-driven nowcast",
+            "market_data": "fixture-backed market prices",
+            "signals": "simulated spread",
+            "actions": "rule-based recommendation engine",
+            "deferred_work": "satellite-derived cloud or irradiance features are captured as deferred follow-up work"
+        }
     )

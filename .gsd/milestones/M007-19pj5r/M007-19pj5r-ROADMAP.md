@@ -18,7 +18,7 @@
 - [x] **S02: Dashboard Overview Aggregation** `risk:high` `depends:[S01]`
   > After this: After this, the frontend can load one portfolio overview endpoint for the dashboard while retaining detailed endpoint drill-downs.
 
-- [ ] **S03: Demo Closure and Honesty Guardrails** `risk:medium` `depends:[S01,S02]`
+- [x] **S03: Demo Closure and Honesty Guardrails** `risk:medium` `depends:[S01,S02]`
   > After this: After this, the complete frontend product story is verified and described honestly for hackathon demo use.
 
 ## Boundary Map

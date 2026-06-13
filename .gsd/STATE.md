@@ -1,7 +1,7 @@
 # GSD State
 
-**Active Milestone:** M007-19pj5r: Portfolio Health Dashboard Closure
-**Active Slice:** S02: Dashboard Overview Aggregation
+**Active Milestone:** None
+**Active Slice:** None
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -12,9 +12,10 @@
 - ✅ **M004-njfgw0:** Frontend Alignment Foundation
 - ✅ **M005-9qprou:** Forecast and Market Credibility Layer
 - ✅ **M006-cgt3hd:** Commitment Action Loop
-- 🔄 **M007-19pj5r:** Portfolio Health Dashboard Closure
+- ✅ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S03 of M007-19pj5r: Verified end-to-end demo story and added honest terminology to documentation and backend responses.
 - Completed S02 of M007-19pj5r: Implemented dashboard overview aggregation endpoint and portfolio tab in frontend.
 - Completed S01 of M007-19pj5r: Implemented rule-based plant health API endpoint.
 - Completed S03 of M006-cgt3hd: Implemented /commitment/metrics endpoint and test_commitment_smoke.py end-to-end test.
