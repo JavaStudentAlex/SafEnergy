@@ -16,7 +16,7 @@
 - [x] **S01: Satellite Discovery and Feature Seed** `risk:high` `depends:[]`
   > After this: A small region and time range either discovers satellite provider items with CRS and footprint metadata or returns a typed unavailable-provider diagnostic.
 
-- [ ] **S02: Live Market and Generation Adapter** `risk:high` `depends:[]`
+- [x] **S02: Live Market and Generation Adapter** `risk:high` `depends:[]`
   > After this: A market adapter normalizes live or fixture-backed ERCOT-style price and generation records with issue-time-safe provenance and staleness checks.
 
 - [ ] **S03: Provenance and Geospatial Metadata Backbone** `risk:medium` `depends:[S01,S02]`

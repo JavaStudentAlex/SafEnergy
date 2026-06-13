@@ -18,7 +18,7 @@ This document defines the core boundaries and contracts for the SafEnergy protot
 
 ## 4. Data Availability and Assumptions
 - **Satellite/Weather Data:** Features rely on inputs like Copernicus/Sentinel and Open-Meteo. Missing data, stale satellite tiles, and cloudy scenes must be explicitly surfaced rather than silently ignored.
-- **Market Data:** Historical generation and price data are used. External APIs can be mocked or backed by deterministic fixtures for testing and demo reliability.
+- **Market Data:** Historical generation and price data are used. External APIs can be mocked or backed by deterministic fixtures for testing and demo reliability. Note that live market data is meant for **decision support and backtests only**. SafEnergy implements a strict **no-live-trading boundary**.
 - **Leakage Prevention:** Features used to predict a given target must strictly reflect data available *at or before the forecast issue time*. Temporal splits must be used for all training and backtesting.
 
 ## 5. Success Contract

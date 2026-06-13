@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M002-7jq3dt: Live Data Forecast Serving Integration
-**Active Slice:** S01: Satellite Discovery and Feature Seed
+**Active Slice:** S02: Live Market and Generation Adapter
 **Phase:** execution
 **Requirements Status:** 1 active · 0 validated · 0 deferred · 0 out of scope
 
@@ -10,6 +10,7 @@
 - 🟢 **M002-7jq3dt:** Live Data Forecast Serving Integration
 
 ## Recent Decisions
+- Completed S02 of M002-7jq3dt: Replaced deterministic market mocks with a provider-shaped adapter, added fixture fallback and network failure simulation.
 - Completed S01 of M002-7jq3dt: Implemented satellite discovery via fixture fallback and minimal deterministic satellite feature extraction.
 - Verified all tasks in M001-7qeil2 are complete and tests are passing.
 - Completed S14: Testing and Final Demo Polish, including documentation and smoke tests.
@@ -30,4 +31,4 @@
 - None
 
 ## Next Action
-Proceed to S02: Live Market and Generation Adapter.
+Proceed to S03: Provenance and Geospatial Metadata Backbone.

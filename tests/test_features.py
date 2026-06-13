@@ -1,7 +1,10 @@
 import pandas as pd
 import pytest
 
-from safenergy.features.alignment import align_weather_and_generation
+from safenergy.features.alignment import (
+    align_generation_and_prices,
+    align_weather_and_generation,
+)
 from safenergy.features.engineering import (
     create_lagged_features,
     create_target_deltas,
@@ -78,3 +81,18 @@ def test_split_temporal():
     assert len(test) == 5
     assert train.index.max() < split_time
     assert test.index.min() == split_time
+
+
+
+@pytest.fixture
+def sample_prices_df():
+    idx = pd.date_range(start="2023-01-01 00:00", periods=20, freq="15min", tz="UTC")
+    return pd.DataFrame({"rtm_price_usd_mwh": [20.0] * 20}, index=idx)
+
+def test_align_generation_and_prices(sample_generation_df, sample_prices_df):
+    aligned = align_generation_and_prices(sample_generation_df, sample_prices_df)
+    assert not aligned.empty
+    assert "solar_generation_mw" in aligned.columns
+    assert "rtm_price_usd_mwh" in aligned.columns
+    assert str(aligned.index.tz) == "UTC"
+    assert len(aligned) == 5
