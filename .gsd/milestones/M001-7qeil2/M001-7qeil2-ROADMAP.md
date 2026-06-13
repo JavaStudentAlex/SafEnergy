@@ -54,7 +54,7 @@
 - [x] **S13: Dashboard and Backtest Views** `[sketch]` `risk:medium` `depends:[S07,S09,S11,S12]`
   > After this: A Streamlit dashboard visualizes forecasts, satellite features, trading impact, and backtest results.
 
-- [ ] **S14: Testing and Final Demo Polish** `[sketch]` `risk:medium` `depends:[S01,S02,S03,S04,S05,S06,S07,S08,S09,S10,S11,S12,S13]`
+- [x] **S14: Testing and Final Demo Polish** `[sketch]` `risk:medium` `depends:[S01,S02,S03,S04,S05,S06,S07,S08,S09,S10,S11,S12,S13]`
   > After this: The prototype has deterministic tests, smoke checks, documentation, and final demo polish.
 
 ## Boundary Map
