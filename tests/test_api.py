@@ -310,3 +310,24 @@ def test_market_prices_invalid_zone():
     response = client.get("/market/prices?zone=ERCOT")
     assert response.status_code == 400
     assert "Only DE-LU zone is supported" in response.json()["detail"]
+
+def test_commitment_recommend():
+    payload = {
+        "forecast_mwh": 90.0,
+        "committed_mwh": 100.0,
+        "battery_available_mwh": 5.0,
+        "intraday_eur_mwh": 50.0,
+        "balancing_short_eur_mwh": 100.0
+    }
+
+    response = client.post("/commitment/recommend", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["action"] == "DISCHARGE_AND_BUY"
+    assert data["commitment_gap_mwh"] == 10.0
+    assert data["battery_discharge_mwh"] == 5.0
+    assert data["market_buy_mwh"] == 5.0
+    assert data["estimated_cost_eur"] == 250.0
+    assert data["avoided_imbalance_cost_eur"] == 1000.0
+    assert data["confidence_score"] == 0.9
+    assert "Discharging 5.00 MWh from battery" in data["explanation"]

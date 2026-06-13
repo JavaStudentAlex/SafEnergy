@@ -12,7 +12,7 @@
 
 ## Slices
 
-- [ ] **S01: Recommendation Engine** `risk:high` `depends:[]`
+- [x] **S01: Recommendation Engine** `risk:high` `depends:[]`
   > After this: After this, the frontend can request a commitment recommendation and display a clear action with explanation and cost impact.
 
 - [ ] **S02: Accepted Action Ledger** `risk:medium` `depends:[S01]`

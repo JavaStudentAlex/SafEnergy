@@ -15,10 +15,13 @@ from safenergy.api.schemas import (
     OrchestratorAPIResponse,
     OrchestratorRequest,
     PlantResponse,
+    RecommendationRequest,
+    RecommendationResponse,
     SignalRequest,
     WeatherPoint,
     WeatherResponse,
 )
+from safenergy.commitment.engine import recommend_action
 from safenergy.forecast.service import forecast_serving
 from safenergy.ingest.market import fetch_delu_prices
 from safenergy.ingest.plants import get_all_plants, get_plant_by_id
@@ -515,3 +518,13 @@ def get_market_prices(zone: str = "DE-LU", hours: int = 24):
         interval_minutes=15, # 15-minute intervals for DE-LU mock
         points=points
     )
+
+@router.post("/commitment/recommend", response_model=RecommendationResponse, tags=["Commitment"])
+def get_commitment_recommendation(request: RecommendationRequest):
+    """
+    Generate an action recommendation based on commitment gap, battery availability, and market prices.
+    """
+    try:
+        return recommend_action(request)
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred during recommendation generation.")

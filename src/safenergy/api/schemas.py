@@ -147,3 +147,20 @@ class MarketPriceResponse(BaseModel):
     provenance: str
     interval_minutes: int
     points: List[MarketPricePoint]
+
+class RecommendationRequest(BaseModel):
+    forecast_mwh: float
+    committed_mwh: float
+    battery_available_mwh: float
+    intraday_eur_mwh: float
+    balancing_short_eur_mwh: float
+
+class RecommendationResponse(BaseModel):
+    action: str
+    commitment_gap_mwh: float
+    battery_discharge_mwh: float
+    market_buy_mwh: float
+    estimated_cost_eur: float
+    avoided_imbalance_cost_eur: float
+    confidence_score: float
+    explanation: str
