@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-06-13T06:07:07Z | Files: 77 | Described: 0/77
-<!-- gsd:codebase-meta {"generatedAt":"2026-06-13T06:07:07Z","fingerprint":"da97ec6a3157aae8ea21d552f6d7a669a8fdc157","fileCount":77,"truncated":false} -->
+Generated: 2026-06-13T08:08:51Z | Files: 86 | Described: 0/86
+<!-- gsd:codebase-meta {"generatedAt":"2026-06-13T08:08:51Z","fingerprint":"cf06350eb994dd2cff5a6eb7a4f651536f73f282","fileCount":86,"truncated":false} -->
 
 ### (root)/
 - `.env.example`
@@ -75,16 +75,19 @@ Generated: 2026-06-13T06:07:07Z | Files: 77 | Described: 0/77
 - `src/safenergy/features/__init__.py`
 - `src/safenergy/features/alignment.py`
 - `src/safenergy/features/engineering.py`
+- `src/safenergy/features/satellite.py`
 
 ### src/safenergy/forecast/
 - `src/safenergy/forecast/__init__.py`
 - `src/safenergy/forecast/baselines.py`
 - `src/safenergy/forecast/evaluate.py`
 - `src/safenergy/forecast/models.py`
+- `src/safenergy/forecast/service.py`
 
 ### src/safenergy/ingest/
 - `src/safenergy/ingest/__init__.py`
 - `src/safenergy/ingest/market.py`
+- `src/safenergy/ingest/satellite.py`
 - `src/safenergy/ingest/weather.py`
 
 ### src/safenergy/signals/
@@ -111,6 +114,7 @@ Generated: 2026-06-13T06:07:07Z | Files: 77 | Described: 0/77
 - `tests/test_explanation.py`
 - `tests/test_features.py`
 - `tests/test_forecast_models.py`
+- `tests/test_forecast_service.py`
 - `tests/test_signals_pipeline.py`
 - `tests/test_signals.py`
 - `tests/test_storage.py`
@@ -118,6 +122,17 @@ Generated: 2026-06-13T06:07:07Z | Files: 77 | Described: 0/77
 ### tests/core/
 - `tests/core/test_config.py`
 
+### tests/features/
+- `tests/features/test_satellite_features.py`
+
+### tests/fixtures/market/
+- `tests/fixtures/market/generation.csv`
+- `tests/fixtures/market/prices.csv`
+
+### tests/fixtures/satellite/
+- `tests/fixtures/satellite/sample_discovery.json`
+
 ### tests/ingest/
 - `tests/ingest/test_market.py`
+- `tests/ingest/test_satellite.py`
 - `tests/ingest/test_weather.py`
