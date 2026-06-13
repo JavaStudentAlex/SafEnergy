@@ -14,7 +14,7 @@
 
 ## Slices
 
-- [ ] **S01: Forecast Method Contract** `risk:high` `depends:[]`
+- [x] **S01: Forecast Method Contract** `risk:high` `depends:[]`
   > After this: A reader can open the milestone context and forecast contract notes to see exactly which methods exist, what inputs they need, how selection works, and what the system must not claim.
 
 - [ ] **S02: Solar and Persistence Methods** `risk:high` `depends:[S01]`

@@ -26,3 +26,20 @@ This document defines the core boundaries and contracts for the SafEnergy protot
 - **Signal Boundary:** The system produces explainable operational and trading-impact signals (e.g., risk-filtered signals for backtesting or decision support). **Live trade execution is explicitly out of scope.**
 - **Explainability:** Forecasts and signals must be accompanied by human-readable explanations covering key drivers (e.g., "irradiance anomaly", "wind speed change") and model uncertainty.
 - **Reproducibility:** The entire pipeline from ingestion to backtest evaluation must be verifiable, with a final reproducible demo using cached or fixture data when external services are unavailable.
+
+## 6. No-Training Forecast Method Stack
+
+When trained AI/ML forecasting model artifacts are unavailable or not trustworthy, SafEnergy falls back to an honest, deterministic **No-Training Forecast Method Stack**.
+
+### Method Fallback Hierarchy
+The method selector ranks available no-training methods based on input availability, preferring the best available honest method:
+1. **Smart/Normalized Persistence:** Requires recent generation plus irradiance or weather availability.
+2. **pvlib Physical Solar:** Requires solar asset metadata (location, capacity, time) plus weather or irradiance.
+3. **Wind Power-Curve Approximation:** Requires wind asset metadata plus wind forecast.
+4. **Regional Capacity Fallback:** Requires installed capacity and regional weather only (lower confidence).
+5. **Diagnostic Fallback:** Occurs when inputs are insufficient. Returns a labeled diagnostic fallback or no reliable forecast; never an unlabeled fixed constant.
+
+### Fallback Contract & Constraints
+- **Output Requirements:** Every forecast response without a trained model artifact must identify the selected method, inputs used, missing inputs, fallback reason, confidence score, uncertainty band, issue time, valid time, horizon, and provenance references.
+- **Conservative Signaling:** Trading signal generation becomes conservative or returns no-action when confidence is low due to poor input quality or missing data.
+- **No False Claims:** The system **must not claim trained AI/ML forecasting performance** when using these deterministic baselines. It must clearly document these outputs as explainable no-training baselines.
