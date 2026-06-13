@@ -14,9 +14,12 @@ from safenergy.api.schemas import (
     OrchestratorRequest,
     PlantResponse,
     SignalRequest,
+    WeatherPoint,
+    WeatherResponse,
 )
 from safenergy.forecast.service import forecast_serving
 from safenergy.ingest.plants import get_all_plants, get_plant_by_id
+from safenergy.ingest.weather import fetch_weather_forecast
 from safenergy.orchestrator.pipeline import run_end_to_end_pipeline
 from safenergy.signals.backtest import evaluate_signals
 from safenergy.signals.explanation import ExplanationResponse, generate_explanation
@@ -222,3 +225,114 @@ def get_plant(plant_id: str):
     if plant is None:
         raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
     return plant
+
+
+@router.get("/weather/live", response_model=WeatherResponse, tags=["Weather"])
+def get_weather_live(plant_id: str):
+    """
+    Returns the current hour's weather for a given plant.
+    """
+    plant = get_plant_by_id(plant_id)
+    if plant is None:
+        raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
+
+    lat = plant["latitude"]
+    lon = plant["longitude"]
+
+    try:
+        # Fetch weather data for today and tomorrow to cover UTC overlap
+        df = fetch_weather_forecast(latitude=lat, longitude=lon, past_days=0, forecast_days=1)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
+
+    if df.empty:
+        raise HTTPException(status_code=500, detail="Weather data is empty")
+
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+
+    # Filter for the current hour's row
+    # Ensure timezone comparison works properly
+    if df.index.tz is None:
+        df.index = df.index.tz_localize("UTC")
+
+    df_current = df[df.index == current_hour]
+
+    if len(df_current) == 0:
+        # Fallback to the closest available past row if current hour is somehow missing
+        df_past = df[df.index <= current_hour]
+        if len(df_past) > 0:
+            df_current = df_past.iloc[[-1]]
+        else:
+            raise HTTPException(status_code=500, detail="Could not find current hour weather data")
+
+    row = df_current.iloc[0]
+    point = WeatherPoint(
+        timestamp=df_current.index[0].to_pydatetime(),
+        temperature_2m=float(row.get("temperature_2m", 0.0)),
+        cloud_cover=float(row.get("cloud_cover", 0.0)),
+        wind_speed_10m=float(row.get("wind_speed_10m", 0.0)),
+        shortwave_radiation=float(row.get("shortwave_radiation", 0.0))
+    )
+
+    return WeatherResponse(
+        plant_id=plant_id,
+        valid_time=now,
+        provenance="open-meteo",
+        interval_minutes=60,
+        points=[point]
+    )
+
+@router.get("/weather/forecast", response_model=WeatherResponse, tags=["Weather"])
+def get_weather_forecast(plant_id: str, hours: int = 24):
+    """
+    Returns the future weather forecast points for a given plant.
+    """
+    plant = get_plant_by_id(plant_id)
+    if plant is None:
+        raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
+
+    lat = plant["latitude"]
+    lon = plant["longitude"]
+
+    # Estimate how many days we need. hours / 24 + 1
+    forecast_days = max(1, (hours // 24) + 2)
+
+    try:
+        df = fetch_weather_forecast(latitude=lat, longitude=lon, past_days=0, forecast_days=forecast_days)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
+
+    if df.empty:
+        raise HTTPException(status_code=500, detail="Weather data is empty")
+
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+
+    if df.index.tz is None:
+        df.index = df.index.tz_localize("UTC")
+
+    # Filter to include rows strictly greater than current hour
+    df_future = df[df.index > current_hour]
+
+    # Limit to requested hours
+    df_future = df_future.head(hours)
+
+    points = []
+    for ts, row in df_future.iterrows():
+        point = WeatherPoint(
+            timestamp=ts.to_pydatetime(),
+            temperature_2m=float(row.get("temperature_2m", 0.0)),
+            cloud_cover=float(row.get("cloud_cover", 0.0)),
+            wind_speed_10m=float(row.get("wind_speed_10m", 0.0)),
+            shortwave_radiation=float(row.get("shortwave_radiation", 0.0))
+        )
+        points.append(point)
+
+    return WeatherResponse(
+        plant_id=plant_id,
+        valid_time=now,
+        provenance="open-meteo",
+        interval_minutes=60,
+        points=points
+    )

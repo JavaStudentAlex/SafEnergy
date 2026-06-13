@@ -1,5 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
+import pandas as pd
 from fastapi.testclient import TestClient
 
 from safenergy.api.main import app
@@ -156,3 +158,66 @@ def test_get_plant_not_found():
     assert response.status_code == 404
     data = response.json()
     assert data["detail"] == "Plant non-existent-plant not found"
+
+
+
+
+@patch("safenergy.api.routes.fetch_weather_forecast")
+def test_weather_live(mock_fetch_weather):
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+
+    # Create mock weather df
+    timestamps = [current_hour - timedelta(hours=1), current_hour, current_hour + timedelta(hours=1)]
+    df = pd.DataFrame(
+        data={
+            "temperature_2m": [10.0, 15.0, 20.0],
+            "cloud_cover": [0.0, 50.0, 100.0],
+            "wind_speed_10m": [5.0, 10.0, 15.0],
+            "shortwave_radiation": [100.0, 500.0, 800.0]
+        },
+        index=pd.DatetimeIndex(timestamps, tz="UTC")
+    )
+    mock_fetch_weather.return_value = df
+
+    response = client.get("/weather/live?plant_id=pv-texas-01")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["plant_id"] == "pv-texas-01"
+    assert data["provenance"] == "open-meteo"
+    assert len(data["points"]) == 1
+    point = data["points"][0]
+    assert point["temperature_2m"] == 15.0
+    assert point["cloud_cover"] == 50.0
+
+def test_weather_live_not_found():
+    response = client.get("/weather/live?plant_id=non-existent-plant")
+    assert response.status_code == 404
+
+@patch("safenergy.api.routes.fetch_weather_forecast")
+def test_weather_forecast(mock_fetch_weather):
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+
+    timestamps = [current_hour, current_hour + timedelta(hours=1), current_hour + timedelta(hours=2)]
+    df = pd.DataFrame(
+        data={
+            "temperature_2m": [15.0, 20.0, 25.0],
+            "cloud_cover": [50.0, 60.0, 70.0],
+            "wind_speed_10m": [10.0, 15.0, 20.0],
+            "shortwave_radiation": [500.0, 800.0, 900.0]
+        },
+        index=pd.DatetimeIndex(timestamps, tz="UTC")
+    )
+    mock_fetch_weather.return_value = df
+
+    response = client.get("/weather/forecast?plant_id=pv-texas-01&hours=2")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["points"]) == 2
+    assert data["points"][0]["temperature_2m"] == 20.0
+    assert data["points"][1]["temperature_2m"] == 25.0
+
+def test_weather_forecast_not_found():
+    response = client.get("/weather/forecast?plant_id=non-existent-plant")
+    assert response.status_code == 404
