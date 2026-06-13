@@ -23,7 +23,7 @@
 - [x] **S03: Wind and Regional Fallback Methods** `risk:medium` `depends:[S01]`
   > After this: Fixture wind inputs can produce a documented wind generation-change estimate or an honest regional fallback when detailed wind asset metadata is missing.
 
-- [ ] **S04: Method Selector Confidence and Uncertainty** `risk:high` `depends:[S02,S03]`
+- [x] **S04: Method Selector Confidence and Uncertainty** `risk:high` `depends:[S02,S03]`
   > After this: Changing fixture availability from rich inputs to missing inputs changes selected method, confidence, uncertainty, and fallback reason predictably.
 
 - [ ] **S05: API and Signal Integration** `risk:medium` `depends:[S04]`
