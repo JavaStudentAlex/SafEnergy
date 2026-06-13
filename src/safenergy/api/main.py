@@ -22,7 +22,7 @@ app.add_middleware(
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
-        content={"detail": str(exc)},
+        content={"detail": "An internal server error occurred."},
     )
 
 app.include_router(router)

@@ -1,13 +1,13 @@
 # GSD State
 
 **Active Milestone:** M002-7jq3dt: Live Data Forecast Serving Integration
-**Active Slice:** S08: API Hardening and Root Documentation
+**Active Slice:** None
 **Phase:** refining
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
 ## Milestone Registry
 - 🔄 **M001-7qeil2:** Renewable Forecasting Trading Prototype
-- ⬜ **M002-7jq3dt:** Live Data Forecast Serving Integration
+- 🔄 **M002-7jq3dt:** Live Data Forecast Serving Integration
 - ⬜ **M003-4jb56n:** No Training Forecast Method Stack
 - ⬜ **M004-njfgw0:** Frontend Alignment Foundation
 - ⬜ **M005-9qprou:** Forecast and Market Credibility Layer
@@ -15,6 +15,7 @@
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S08 of M002-7jq3dt: Handled raw exception leakages across API routes and the global exception handler, added the root documentation (README.md).
 - Completed S07 of M002-7jq3dt: Added backtest assumptions including transaction costs and slippage, enforced issue-time leakage guard, and added source attribution limitations to explanation payload.
 - D001 (M003-4jb56n planning): How to represent the no-training forecast strategy -> Create a separate queued milestone M003-4jb56n focused only on the unique no-training forecast method stack
 - Completed S06 of M002-7jq3dt: Refactored the Streamlit dashboard to hit FastAPI endpoints instead of calling python functions directly, added Orchestrator tab.
@@ -40,6 +41,3 @@
 
 ## Blockers
 - None
-
-## Next Action
-Refine sketch slice S08 (API Hardening and Root Documentation) using prior slice context.

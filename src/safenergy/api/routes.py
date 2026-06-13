@@ -60,8 +60,8 @@ def compute_trading_signals(request: SignalRequest):
             extreme_price_threshold=request.extreme_price_threshold,
         )
         return signals
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred during trading signal generation.")
 
 
 @router.post("/trading/backtest", response_model=BacktestResponse, tags=["Trading"])
@@ -88,8 +88,8 @@ def compute_backtest(request: BacktestRequest):
             issue_time=request.issue_time
         )
         return BacktestResponse(**results)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred during backtest evaluation.")
 
 
 @router.post("/forecast/predict", response_model=ForecastResponse, tags=["Forecast"])
@@ -132,8 +132,8 @@ def predict_forecast(request: ForecastRequest):
             asset_id=request.asset_id,
             predictions=predictions
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred during forecast prediction.")
 
 
 @router.post("/trading/explain", response_model=ExplanationResponse, tags=["Trading"])
@@ -150,8 +150,8 @@ def explain_forecast(request: ExplanationRequest):
             features=request.features,
             market_price=request.market_price,
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred during forecast explanation.")
 
 @router.post("/orchestrator/run", response_model=OrchestratorAPIResponse, tags=["Orchestrator"])
 def run_orchestrator(request: OrchestratorRequest):
@@ -185,5 +185,5 @@ def run_orchestrator(request: OrchestratorRequest):
             explanations=response.explanations,
             forecast_data_state=state
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred during orchestrator pipeline execution.")
