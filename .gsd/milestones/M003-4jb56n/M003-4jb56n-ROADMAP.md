@@ -20,7 +20,7 @@
 - [x] **S02: Solar and Persistence Methods** `risk:high` `depends:[S01]`
   > After this: Fixture inputs can produce smart persistence, weather or irradiance normalized persistence, pvlib physical solar, or regional fallback outputs with named method metadata.
 
-- [ ] **S03: Wind and Regional Fallback Methods** `risk:medium` `depends:[S01]`
+- [x] **S03: Wind and Regional Fallback Methods** `risk:medium` `depends:[S01]`
   > After this: Fixture wind inputs can produce a documented wind generation-change estimate or an honest regional fallback when detailed wind asset metadata is missing.
 
 - [ ] **S04: Method Selector Confidence and Uncertainty** `risk:high` `depends:[S02,S03]`

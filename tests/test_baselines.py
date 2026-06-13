@@ -4,9 +4,11 @@ import pytest
 from safenergy.forecast.baselines import (
     persistence_baseline,
     pvlib_physical_baseline,
+    regional_capacity_fallback,
     same_hour_yesterday_baseline,
     smart_persistence_baseline,
     weather_only_baseline,
+    wind_power_curve_baseline,
 )
 
 
@@ -205,3 +207,64 @@ def test_pvlib_physical_baseline_missing_cols():
     )
 
     assert baseline.isna().all()
+
+
+def test_wind_power_curve_baseline():
+    idx = pd.date_range(start="2023-01-01 00:00", periods=5, freq="1h", tz="UTC")
+    df = pd.DataFrame(
+        {
+            "wind_speed": [2.0, 5.0, 10.0, 15.0, 30.0],
+        },
+        index=idx,
+    )
+
+    # Using defaults: cut_in=3.0, rated=12.0, cut_out=25.0
+    capacity = 100.0
+
+    baseline = wind_power_curve_baseline(df, "wind_speed", capacity)
+
+    assert len(baseline) == 5
+    assert not baseline.isna().any()
+
+    # 2.0 is below cut-in
+    assert baseline.iloc[0] == 0.0
+
+    # 5.0 is between cut-in and rated. norm = (5-3)/(12-3) = 2/9. power = 100 * (2/9)^3 ~= 1.097
+    assert baseline.iloc[1] > 0.0
+    assert baseline.iloc[1] < capacity
+    assert baseline.iloc[1] == pytest.approx(100.0 * ((5.0 - 3.0) / (12.0 - 3.0)) ** 3)
+
+    # 10.0 is closer to rated.
+    assert baseline.iloc[2] > baseline.iloc[1]
+    assert baseline.iloc[2] < capacity
+
+    # 15.0 is above rated, below cut-out
+    assert baseline.iloc[3] == capacity
+
+    # 30.0 is above cut-out
+    assert baseline.iloc[4] == 0.0
+
+def test_wind_power_curve_baseline_missing_cols():
+    idx = pd.date_range(start="2023-01-01 00:00", periods=2, freq="1h", tz="UTC")
+    df = pd.DataFrame({"ws": [10.0, 15.0]}, index=idx)
+
+    baseline = wind_power_curve_baseline(df, "wind_speed", 100.0)
+    assert baseline.isna().all()
+
+def test_regional_capacity_fallback():
+    idx = pd.date_range(start="2023-01-01 00:00", periods=3, freq="1h", tz="UTC")
+    df = pd.DataFrame(index=idx)
+
+    capacity = 500.0
+    cf = 0.25
+
+    baseline = regional_capacity_fallback(df, capacity, cf)
+
+    assert len(baseline) == 3
+    assert not baseline.isna().any()
+    assert (baseline == capacity * cf).all()
+
+def test_regional_capacity_fallback_empty():
+    df = pd.DataFrame()
+    baseline = regional_capacity_fallback(df, 100.0)
+    assert len(baseline) == 0
