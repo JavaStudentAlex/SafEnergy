@@ -1,4 +1,5 @@
 import pandas as pd
+import pvlib
 from sklearn.linear_model import LinearRegression
 
 
@@ -102,3 +103,111 @@ def same_hour_yesterday_baseline(df: pd.DataFrame, target_col: str) -> pd.Series
 
     # Shift the target by 24 hours
     return df[target_col].shift(24)
+
+
+def smart_persistence_baseline(
+    df: pd.DataFrame, target_col: str, norm_col: str, horizon_hours: int, eps: float = 1e-4
+) -> pd.Series:
+    """
+    Creates a smart persistence baseline forecast.
+    Predicts that generation is proportional to a normalizing variable (like irradiance).
+    generation_t = (generation_{t-h} / (norm_col_{t-h} + eps)) * norm_col_t
+
+    Args:
+        df: Input DataFrame containing target_col and norm_col with a timezone-aware DatetimeIndex.
+        target_col: Name of the target column.
+        norm_col: Name of the normalizing column (e.g., irradiance).
+        horizon_hours: Forecast horizon in hours.
+        eps: Small value to prevent division by zero.
+
+    Returns:
+        A pandas Series containing the smart persistence baseline forecast.
+    """
+    if df.empty or target_col not in df.columns or norm_col not in df.columns:
+        return pd.Series(index=df.index, dtype=float)
+
+    recent_gen = df[target_col].shift(horizon_hours)
+    recent_norm = df[norm_col].shift(horizon_hours)
+    current_norm = df[norm_col]
+
+    prediction = (recent_gen / (recent_norm + eps)) * current_norm
+    return prediction
+
+
+def pvlib_physical_baseline(
+    df: pd.DataFrame,
+    latitude: float,
+    longitude: float,
+    capacity_mw: float,
+    irradiance_col: str = "irradiance",
+    temp_col: str = "temperature"
+) -> pd.Series:
+    """
+    Creates a physical baseline forecast for solar using pvlib.
+
+    Args:
+        df: Input DataFrame containing irradiance and temperature columns.
+        latitude: Latitude of the solar asset.
+        longitude: Longitude of the solar asset.
+        capacity_mw: Installed capacity in MW.
+        irradiance_col: Column name for irradiance (GHI) in W/m^2.
+        temp_col: Column name for temperature in Celsius.
+
+    Returns:
+        A pandas Series containing the physical baseline forecast in MW.
+    """
+    if df.empty or irradiance_col not in df.columns or temp_col not in df.columns:
+        return pd.Series(index=df.index, dtype=float)
+
+    location = pvlib.location.Location(latitude, longitude)
+
+    system = pvlib.pvsystem.PVSystem(
+        arrays=[
+            pvlib.pvsystem.Array(
+                mount=pvlib.pvsystem.FixedMount(surface_tilt=latitude, surface_azimuth=180),
+                module_parameters={"pdc0": capacity_mw, "gamma_pdc": -0.004},
+            )
+        ],
+        inverter_parameters={"pdc0": capacity_mw, "eta_inv_nom": 0.96},
+    )
+
+    times = df.index
+    solar_position = location.get_solarposition(times)
+
+    ghi = df[irradiance_col]
+    zenith = solar_position["zenith"]
+
+    dni_dhi = pvlib.irradiance.erbs(ghi, zenith, times)
+    dni = dni_dhi["dni"]
+    dhi = dni_dhi["dhi"]
+
+    poa = pvlib.irradiance.get_total_irradiance(
+        surface_tilt=system.arrays[0].mount.surface_tilt,
+        surface_azimuth=system.arrays[0].mount.surface_azimuth,
+        dni=dni,
+        ghi=ghi,
+        dhi=dhi,
+        solar_zenith=zenith,
+        solar_azimuth=solar_position["azimuth"],
+    )
+
+    temp_air = df[temp_col]
+    cell_temp = pvlib.temperature.pvsyst_cell(poa["poa_global"], temp_air)
+
+    dc = pvlib.pvsystem.pvwatts_dc(
+        poa["poa_global"],
+        cell_temp,
+        system.arrays[0].module_parameters["pdc0"],
+        system.arrays[0].module_parameters["gamma_pdc"],
+    )
+
+    ac = pvlib.inverter.pvwatts(
+        dc,
+        system.inverter_parameters["pdc0"],
+        system.inverter_parameters["eta_inv_nom"],
+    )
+
+    ac = ac.fillna(0.0)
+    ac = ac.clip(lower=0.0)
+
+    return ac
