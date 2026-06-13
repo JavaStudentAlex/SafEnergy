@@ -17,7 +17,7 @@
 - [x] **S01: Forecast Method Contract** `risk:high` `depends:[]`
   > After this: A reader can open the milestone context and forecast contract notes to see exactly which methods exist, what inputs they need, how selection works, and what the system must not claim.
 
-- [ ] **S02: Solar and Persistence Methods** `risk:high` `depends:[S01]`
+- [x] **S02: Solar and Persistence Methods** `risk:high` `depends:[S01]`
   > After this: Fixture inputs can produce smart persistence, weather or irradiance normalized persistence, pvlib physical solar, or regional fallback outputs with named method metadata.
 
 - [ ] **S03: Wind and Regional Fallback Methods** `risk:medium` `depends:[S01]`
