@@ -15,7 +15,7 @@
 - [x] **S01: Recommendation Engine** `risk:high` `depends:[]`
   > After this: After this, the frontend can request a commitment recommendation and display a clear action with explanation and cost impact.
 
-- [ ] **S02: Accepted Action Ledger** `risk:medium` `depends:[S01]`
+- [x] **S02: Accepted Action Ledger** `risk:medium` `depends:[S01]`
   > After this: After this, the frontend can accept a recommendation and list accepted actions for a plant.
 
 - [ ] **S03: Metrics and Commitment Smoke** `risk:medium` `depends:[S01,S02]`

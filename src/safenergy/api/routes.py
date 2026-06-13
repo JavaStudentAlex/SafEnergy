@@ -22,6 +22,7 @@ from safenergy.api.schemas import (
     WeatherResponse,
 )
 from safenergy.commitment.engine import recommend_action
+from safenergy.commitment.ledger import AcceptedAction, ActionLedger
 from safenergy.forecast.service import forecast_serving
 from safenergy.ingest.market import fetch_delu_prices
 from safenergy.ingest.plants import get_all_plants, get_plant_by_id
@@ -528,3 +529,29 @@ def get_commitment_recommendation(request: RecommendationRequest):
         return recommend_action(request)
     except Exception:
         raise HTTPException(status_code=500, detail="An error occurred during recommendation generation.")
+
+def get_action_ledger() -> ActionLedger:
+    return ActionLedger()
+
+@router.post("/commitment/actions/accept", response_model=AcceptedAction, tags=["Commitment"])
+def accept_commitment_action(action: AcceptedAction):
+    """
+    Accepts and persists a commitment recommendation action to the local ledger.
+    """
+    try:
+        ledger = get_action_ledger()
+        ledger.record_action(action)
+        return action
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred while accepting the action.")
+
+@router.get("/commitment/actions", response_model=list[AcceptedAction], tags=["Commitment"])
+def get_commitment_actions(plant_id: str | None = None):
+    """
+    Retrieves the list of accepted commitment actions from the local ledger.
+    """
+    try:
+        ledger = get_action_ledger()
+        return ledger.get_actions(plant_id)
+    except Exception:
+        raise HTTPException(status_code=500, detail="An error occurred while retrieving accepted actions.")
