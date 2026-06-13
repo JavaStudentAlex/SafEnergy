@@ -15,7 +15,7 @@
 
 ## Slices
 
-- [ ] **S01: MVP Scope and Forecast Contract** `[sketch]` `risk:high` `depends:[]`
+- [x] **S01: MVP Scope and Forecast Contract** `[sketch]` `risk:high` `depends:[]`
   > After this: The project has a documented region, horizons, target variable, data assumptions, and success contract.
 
 - [ ] **S02: Repository Structure and Configuration** `[sketch]` `risk:medium` `depends:[S01]`
