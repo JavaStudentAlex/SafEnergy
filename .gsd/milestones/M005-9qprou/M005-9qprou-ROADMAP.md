@@ -11,7 +11,7 @@
 
 ## Slices
 
-- [ ] **S01: Physics Informed PV Forecast** `risk:high` `depends:[]`
+- [x] **S01: Physics Informed PV Forecast** `risk:high` `depends:[]`
   > After this: After this, the frontend can request short-horizon PV forecasts that respond to plant capacity and weather instead of fixed mocks.
 
 - [ ] **S02: DE LU Market Price Service** `risk:medium` `depends:[]`

@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M005-9qprou: Forecast and Market Credibility Layer
-**Active Slice:** S01: Physics Informed PV Forecast
+**Active Slice:** S02: DE LU Market Price Service
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -15,6 +15,7 @@
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S01 of M005-9qprou: Implemented Physics Informed PV Forecast endpoint /forecast/{plant_id}.
 - Completed S03 of M004-njfgw0: Verified Foundation Contract including API tests and OpenAPI schemas.
 - Completed S02 of M004-njfgw0: Implemented Weather Overlay Endpoints (`/weather/live` and `/weather/forecast`) providing frontend-ready weather data and deterministic fixture-backed behavior.
 - Completed S01 of M004-njfgw0: Implemented Plant Registry Contract endpoints `/plants` and `/plants/{plant_id}`.

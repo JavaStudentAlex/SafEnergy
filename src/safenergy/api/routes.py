@@ -100,6 +100,126 @@ def compute_backtest(request: BacktestRequest):
         raise HTTPException(status_code=500, detail="An error occurred during backtest evaluation.")
 
 
+
+@router.get("/forecast/{plant_id}", response_model=ForecastResponse, tags=["Forecast"])
+def get_forecast(plant_id: str, horizon_minutes: int = 60):
+    """
+    Generate short-term PV generation forecast using physics-informed baselines.
+    Supports horizon_minutes (e.g., 15, 30, 45, 60). Returns future points.
+    """
+    plant = get_plant_by_id(plant_id)
+    if plant is None:
+        raise HTTPException(status_code=404, detail=f"Plant {plant_id} not found")
+
+    lat = plant["latitude"]
+    lon = plant["longitude"]
+    metadata_dict = plant.get("metadata_dict", {})
+    # Provide capacity, lat, lon explicitly in metadata_dict as expected by select_forecast_method
+    metadata_dict.setdefault("capacity_mw", plant.get("capacity_mw"))
+    metadata_dict.setdefault("latitude", lat)
+    metadata_dict.setdefault("longitude", lon)
+
+    # We need recent and future weather data to predict.
+    try:
+        # Fetching a bit of history to allow persistence-like baselines if needed,
+        # and enough future to cover the horizon.
+        horizon_hours = max(1, horizon_minutes // 60 + 1)
+        df_weather = fetch_weather_forecast(latitude=lat, longitude=lon, past_days=1, forecast_days=horizon_hours)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
+
+    if df_weather.empty:
+        raise HTTPException(status_code=500, detail="Weather data is empty")
+
+    if df_weather.index.tz is None:
+        df_weather.index = df_weather.index.tz_localize("UTC")
+
+    # Rename weather columns to match what the baseline logic expects
+    if "shortwave_radiation" in df_weather.columns:
+        df_weather["irradiance"] = df_weather["shortwave_radiation"]
+    if "temperature_2m" in df_weather.columns:
+        df_weather["temperature"] = df_weather["temperature_2m"]
+    if "wind_speed_10m" in df_weather.columns:
+        df_weather["wind_speed"] = df_weather["wind_speed_10m"]
+
+    now = datetime.now(timezone.utc)
+    current_hour = now.replace(minute=0, second=0, microsecond=0)
+
+    asset_type = "solar"
+    # Basic asset type inference from plant type or capacity, if present
+    # Assume solar for these demo PV plants.
+
+    try:
+        preds_df = forecast_serving(
+            features=df_weather,
+            issue_time=now,
+            model_path=None,
+            horizon_hours=horizon_hours,
+            return_uncertainty=True,
+            asset_type=asset_type,
+            metadata_dict=metadata_dict
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Forecast serving failed: {str(e)}")
+
+    # Filter for future points only (up to horizon_minutes)
+    horizon_delta = pd.Timedelta(minutes=horizon_minutes)
+    future_mask = (preds_df.index > current_hour) & (preds_df.index <= current_hour + horizon_delta)
+    # If horizon is small but we only have hourly data, we might not get exact 15m intervals unless we resample.
+    # The requirement says 15/30/45/60. Let's return what we have (hourly points) or optionally resample if needed.
+    # We will resample to 15min to provide those specific horizons if the user requested them.
+
+    # Resample to 15min for high-res output
+    # Only interpolate numeric columns
+    numeric_cols = preds_df.select_dtypes(include="number").columns
+    resampled_df = preds_df.resample("15min").asfreq()
+    resampled_df[numeric_cols] = resampled_df[numeric_cols].interpolate(method="linear")
+    preds_df = resampled_df
+    future_mask = (preds_df.index > current_hour) & (preds_df.index <= current_hour + horizon_delta)
+
+    df_future = preds_df[future_mask]
+
+    predictions = []
+    for ts, row in df_future.iterrows():
+        # Ensure 'point' is not NaN, fallback to 0 if it is (for robustness)
+        point_val = row["point"] if pd.notna(row.get("point")) else 0.0
+
+        prediction = ForecastPrediction(
+            timestamp=ts.to_pydatetime(),
+            point=float(point_val)
+        )
+        if "lower" in row and pd.notna(row["lower"]):
+            prediction.lower = float(row["lower"])
+        if "upper" in row and pd.notna(row["upper"]):
+            prediction.upper = float(row["upper"])
+
+        if "method" in row:
+            prediction.method = str(row["method"])
+        if "confidence_score" in row and pd.notna(row["confidence_score"]):
+            prediction.confidence_score = float(row["confidence_score"])
+        if "fallback_reason" in row:
+            prediction.fallback_reason = str(row["fallback_reason"])
+
+        # Safe handling of lists in resampled columns
+        # Since interpolation turns object columns (like lists) into NaNs or strings, we need safe extraction
+        # Let's take the static values directly from the first un-resampled row if they got corrupted.
+        first_orig_row = preds_df.dropna(subset=['method']).iloc[0] if not preds_df.dropna(subset=['method']).empty else {}
+
+        prediction.method = str(row.get("method") if pd.notna(row.get("method")) else first_orig_row.get("method", "unknown"))
+        prediction.fallback_reason = str(row.get("fallback_reason") if pd.notna(row.get("fallback_reason")) else first_orig_row.get("fallback_reason", ""))
+
+        # Get inputs_used/missing from the original data (since resampled rows won't have the list object properly)
+        prediction.inputs_used = first_orig_row.get("inputs_used", [])
+        prediction.missing_inputs = first_orig_row.get("missing_inputs", [])
+
+        predictions.append(prediction)
+
+    return ForecastResponse(
+        asset_id=plant_id,
+        predictions=predictions
+    )
+
+
 @router.post("/forecast/predict", response_model=ForecastResponse, tags=["Forecast"])
 def predict_forecast(request: ForecastRequest):
     """
