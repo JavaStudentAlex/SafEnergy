@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M004-njfgw0: Frontend Alignment Foundation
-**Active Slice:** S02: Weather Overlay Endpoints
+**Active Slice:** S03: Foundation Contract Verification
 **Phase:** in progress
 **Requirements Status:** 12 active · 0 validated · 1 deferred · 0 out of scope
 
@@ -15,6 +15,7 @@
 - ⬜ **M007-19pj5r:** Portfolio Health Dashboard Closure
 
 ## Recent Decisions
+- Completed S02 of M004-njfgw0: Implemented Weather Overlay Endpoints (`/weather/live` and `/weather/forecast`) providing frontend-ready weather data and deterministic fixture-backed behavior.
 - Completed S01 of M004-njfgw0: Implemented Plant Registry Contract endpoints `/plants` and `/plants/{plant_id}`.
 - Completed S06 of M003-4jb56n: Documented rationale for deterministic baselines and added end-to-end integration tests to test_no_training_stack.py.
 - Completed S05 of M003-4jb56n: API and Signal Integration for no-training forecast stack.

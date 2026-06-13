@@ -117,3 +117,18 @@ class PlantResponse(BaseModel):
     status: str
     battery_capacity_mwh: float
     metadata_dict: Dict[str, Any]
+
+
+class WeatherPoint(BaseModel):
+    timestamp: datetime
+    temperature_2m: float
+    cloud_cover: float
+    wind_speed_10m: float
+    shortwave_radiation: float
+
+class WeatherResponse(BaseModel):
+    plant_id: str
+    valid_time: datetime
+    provenance: str
+    interval_minutes: int
+    points: List[WeatherPoint]
