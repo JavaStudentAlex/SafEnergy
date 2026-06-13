@@ -1,7 +1,7 @@
 # GSD State
 
 **Active Milestone:** M001-7qeil2: Renewable Forecasting Trading Prototype
-**Active Slice:** S04: Time Alignment and Feature Engineering
+**Active Slice:** S05: Forecast Baselines
 **Phase:** refining
 **Requirements Status:** 0 active · 0 validated · 0 deferred · 0 out of scope
 
@@ -17,4 +17,4 @@
 - None
 
 ## Next Action
-Implement slice S04 (Time Alignment and Feature Engineering).
+Implement slice S05 (Forecast Baselines).

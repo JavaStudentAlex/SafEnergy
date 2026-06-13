@@ -24,7 +24,7 @@
 - [x] **S03: Data Ingestion and Quality Checks** `[sketch]` `risk:high` `depends:[S01,S02]`
   > After this: Satellite, weather, generation, and price ingestion adapters expose normalized, provenance-aware data or fixture-backed fallbacks.
 
-- [ ] **S04: Time Alignment and Feature Engineering** `[sketch]` `risk:high` `depends:[S03]`
+- [x] **S04: Time Alignment and Feature Engineering** `[sketch]` `risk:high` `depends:[S03]`
   > After this: Aligned feature tables exist with solar, weather, generation history, target variables, and leakage-safe splits.
 
 - [ ] **S05: Forecast Baselines** `[sketch]` `risk:medium` `depends:[S04]`
