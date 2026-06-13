@@ -28,7 +28,7 @@
 - [x] **S05: End to End Orchestrator** `risk:high` `depends:[S04]`
   > After this: A single orchestration function or service path runs data retrieval, feature building, model inference, baseline comparison, signal generation, explanation, storage, and API response assembly.
 
-- [ ] **S06: Dashboard Backend Integration** `risk:medium` `depends:[S05]`
+- [x] **S06: Dashboard Backend Integration** `risk:medium` `depends:[S05]`
   > After this: The Streamlit dashboard requests forecasts from the FastAPI backend or a shared service client and displays live, cached, fixture, and unavailable states clearly.
 
 - [ ] **S07: Trading Backtest and Explanation Hardening** `risk:medium` `depends:[S05]`
